@@ -110,7 +110,7 @@ export default function CastVote() {
     setIsVerifying(true);
     try {
       const response = await client.post("/auth/verifyToken", {
-        adhar: profile.aadhaar,
+        adhar: profile.adhar,
         token: otp,
       },{
         params:{

@@ -1,10 +1,12 @@
-
 {
   "scripts": {
     "start:backend": "cd server && npm start",
-    "start:frontend": "cd Frontend && npm run dev",
+    "start:frontend": "cd frontend && npm run dev",
     "start:all": "concurrently \"npm run start:backend\" \"npm run start:frontend\"",
-    "start":"npm run start:all"
+    "start": "npm run start:all",
+    "build:backend": "cd server && npm run build",
+    "build:frontend": "cd frontend && npm run build",
+    "build:all": "npm run build:backend && npm run build:frontend"
   },
   "dependencies": {
     "chart.js": "^4.4.3",
