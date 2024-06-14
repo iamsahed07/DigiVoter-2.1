@@ -1,4 +1,4 @@
-import React from 'react';
+// import React from 'react';
 
 // Define party symbols and colors
 const PartyColors = {

@@ -1,5 +1,5 @@
-import React from 'react';
-import CandidateDetails from './CandidateDetails';
+// import React from 'react';
+// import CandidateDetails from './CandidateDetails';
 const Selectors = ({ onElectionChange, onStateChange, onConstituencyChange }) => {
   const elections = [
     { id: 1, name: 'Lok Sabha Results' },

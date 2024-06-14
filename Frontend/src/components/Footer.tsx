@@ -1,5 +1,5 @@
 import React from "react";
-import { DiVim } from "react-icons/di";
+// import { DiVim } from "react-icons/di";
 
 type FooterProps = {};
 

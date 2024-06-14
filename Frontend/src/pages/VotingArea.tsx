@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Container } from "../components/Container";
 import CandidateCard from "../components/CandidateCard";
-import * as CandidatePhotos from "../components/CandidatePhotos";
+// import * as CandidatePhotos from "../components/CandidatePhotos";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 
 const elections = [
@@ -271,8 +271,7 @@ const VotingArea = () => {
                   photoKey={candidate.photoKey}
                   name={candidate.name}
                   party={candidate.party}
-                  age={candidate.age}
-                />
+                  age={candidate.age} id={undefined}                />
               ))}
             </div>
           </div>

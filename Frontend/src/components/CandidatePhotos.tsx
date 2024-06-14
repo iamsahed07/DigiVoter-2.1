@@ -1,6 +1,6 @@
 // CandidatePhotos.tsx
 
-import React from 'react';
+// import React from 'react';
 
 // Import candidate photos
 import Photo1 from '../assets/candidate_photos/rahul_gandhi.png';

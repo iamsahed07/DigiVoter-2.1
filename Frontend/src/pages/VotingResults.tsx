@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Container } from "../components/Container";
 import { Doughnut } from "react-chartjs-2";
 import Select from "react-select";
@@ -62,13 +62,6 @@ const VotingResults = () => {
     ],
   };
 
-  const calculateTotalVotes = (candidates) => {
-    let totalVotes = 0;
-    candidates.forEach((candidate) => {
-      totalVotes += candidate.votes;
-    });
-    return totalVotes;
-  };
 
   const electionResultsData = [
     {

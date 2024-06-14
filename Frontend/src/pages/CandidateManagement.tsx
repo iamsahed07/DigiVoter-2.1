@@ -1,4 +1,4 @@
-import React from "react";
+// import React from "react";
 import { Container } from "../components/Container";
 import { useNavigate } from "react-router-dom";
 import PartyAPng from "../assets/party_logo/tmc.png";

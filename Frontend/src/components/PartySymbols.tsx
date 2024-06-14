@@ -1,4 +1,4 @@
-import React from 'react';
+// import React from 'react';
 
 // Import party logos
 import IncLogo from '../assets/party_logo/inc.png';

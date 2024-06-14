@@ -1,4 +1,4 @@
-import React from 'react';
+// import React from 'react';
 import CandidatePhotos from "../components/CandidatePhotos"; // Corrected import path
 import PartyColors from "../components/PartyColors";
 import { Aitmc, Inc, Bjp, Cpim, Aap, Sjp, Rjp } from "../components/PartySymbols"; // Corrected import path

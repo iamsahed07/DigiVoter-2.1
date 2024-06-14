@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Container } from "../components/Container";
 import { useNavigate } from "react-router-dom";
-import client from "../api/client";
+// import client from "../api/client";
 
 const AdminLogin: React.FC = () => {
   const [adminCredentials, setAdminCredentials] = useState({

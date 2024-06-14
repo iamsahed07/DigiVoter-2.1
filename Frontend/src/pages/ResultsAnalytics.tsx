@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Container } from "../components/Container";
 import { Doughnut } from "react-chartjs-2";
 import Select from "react-select";
