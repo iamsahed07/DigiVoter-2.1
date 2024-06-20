@@ -32,7 +32,7 @@ const VoterManagement = () => {
 
   return (
     <div className="min-h-screen flex flex-col w-3/4 float-right mr-10 mt-10">
-      <Container className="bg-white col-start-2 col-end-12 mt-1 mb-6 shadow-lg rounded-lg">
+      <Container className="bg-gray-50 col-start-2 col-end-12 mt-1 mb-6 shadow-lg rounded-lg">
         <div className="bg-indigo-500 text-white rounded-t-md shadow-lg">
           <div className="flex justify-center items-center h-9">
             <h1 className="py-1 text-lg font-bold uppercase">Manage Voters</h1>
@@ -54,21 +54,11 @@ const VoterManagement = () => {
                 View All Voters
               </button>
             </div>
-            <select
-              className="p-2 bg-white border border-gray-300 rounded-lg"
-              onChange={handleViewVoters}
-            >
-              <option value="">Select Assembly</option>
-              <option value="Assembly 1">Assembly 1</option>
-              <option value="Assembly 2">Assembly 2</option>
-              <option value="Assembly 3">Assembly 3</option>
-              <option value="Assembly 4">Assembly 4</option>
-            </select>
           </div>
           <h3 className="text-2xl font-semibold mb-4">Total Voters: {voters.length}</h3>
           <ul className="grid grid-cols-1 gap-4">
             {voters.map((voter, index) => (
-              <li key={voter.id} className="bg-gray-100 p-4 rounded-lg flex items-center justify-between">
+              <li key={voter.id} className="bg-white p-4 rounded-lg flex items-center justify-between">
                 <div className="w-1/5">
                   <p className="text-gray-600">Sl.No.: {index + 1}</p>
                   <p className="text-gray-600">Voter Id: {voter.id}</p>

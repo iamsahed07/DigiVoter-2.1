@@ -18,7 +18,6 @@ const AddCandidate = () => {
   const [imagePreview, setImagePreview] = useState(null);
   const [confirmation, setConfirmation] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -118,7 +117,9 @@ const AddCandidate = () => {
                 </select>
               </div>
               <div className="flex flex-col">
-                <label className="text-gray-700 font-semibold">Constituency:</label>
+                <label className="text-gray-700 font-semibold">
+                  Constituency:
+                </label>
                 <select
                   name="constituency"
                   value={candidate.constituency}
@@ -133,18 +134,22 @@ const AddCandidate = () => {
               </div>
             </div>
             <div className="flex flex-col">
-  <label className="text-gray-700 font-semibold">Aadhaar Number:</label>
-  <input
-    type="text"
-    name="aadhaar"
-    value={candidate.aadhaar}
-    onChange={handleChange}
-    className="border rounded-lg p-2 mt-1"
-    required
-  />
-</div>
+              <label className="text-gray-700 font-semibold">
+                Aadhaar Number:
+              </label>
+              <input
+                type="text"
+                name="aadhaar"
+                value={candidate.aadhaar}
+                onChange={handleChange}
+                className="border rounded-lg p-2 mt-1"
+                required
+              />
+            </div>
             <div className="flex flex-col">
-              <label className="text-gray-700 font-semibold">Date of Birth:</label>
+              <label className="text-gray-700 font-semibold">
+                Date of Birth:
+              </label>
               <input
                 type="date"
                 name="dob"
@@ -184,23 +189,21 @@ const AddCandidate = () => {
                 className="mr-2"
                 onChange={(e) => setConfirmation(e.target.checked)}
               />
-              <label className="text-gray-700">
-                Confirm before submitting
-              </label>
+              <label className="text-gray-700">Confirm before submitting</label>
             </div>
             <div className="flex justify-between px-2">
+              <button
+                type="submit"
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition duration-300 ease-in-out transform hover:scale-105"
+              >
+                Submit
+              </button>
               <button
                 type="button"
                 onClick={() => navigate("/candidate-management")}
                 className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-lg"
               >
                 Cancel
-              </button>
-              <button
-                type="submit"
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition duration-300 ease-in-out transform hover:scale-105"
-              >
-                Submit
               </button>
             </div>
           </form>

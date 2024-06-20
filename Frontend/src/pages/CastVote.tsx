@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Container } from "../components/Container";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { getAuthState } from "../store/auth";
 import { Aitmc, Inc, Bjp, Cpim, Aap, Sjp, Rjp } from "../components/PartySymbols";
@@ -69,20 +69,17 @@ const candidatesData = [
 
 export default function CastVote() {
   const { profile } = useSelector(getAuthState);
-  const navigate = useNavigate();
   const [votedCandidateId, setVotedCandidateId] = useState(null);
   const [showOtpPopup, setShowOtpPopup] = useState(false);
   const [otp, setOtp] = useState("");
   const [isVerifying, setIsVerifying] = useState(false);
 
-  // console.log(profile?.adhar);
   const handleVoteClick = async (candidateId) => {
     setVotedCandidateId(candidateId);
     setTimeout(() => {
       setShowOtpPopup(true);
     }, 1000);
-    const token = localStorage.getItem('token')
-    // console.log(token);
+    const token = localStorage.getItem('token');
     try {
       const response = await client.post(
         "/vote/sendOtpForVote",
@@ -137,8 +134,8 @@ export default function CastVote() {
   return (
     <div className="flex flex-col w-full md:w-3/4 md:float-right md:mr-10 h-screen mt-10">
       <Container className="bg-white col-start-2 col-end-12 mt-1 mb-6 shadow-2xl">
-        <div className="bg-blue-500 text-center text-white rounded-t-md shadow-lg">
-          <h1 className="py-2 text-lg font-bold">Cast Vote</h1>
+        <div className="flex justify-center items-center bg-indigo-500 text-center text-white rounded-t-md h-12 ">
+          <h1 className="py-2 text-2xl font-bold uppercase">Cast Vote</h1>
         </div>
         <div className="flex flex-col items-center p-4">
           {candidatesData.map((candidate, index) => (
@@ -195,15 +192,23 @@ export default function CastVote() {
               placeholder="Enter 6-digit OTP"
               maxLength="6"
             />
-            <button
-              onClick={handleOtpSubmit}
-              className={`bg-blue-500 text-white px-4 py-2 rounded ${
-                isVerifying ? "opacity-50 cursor-not-allowed" : ""
-              }`}
-              disabled={isVerifying}
-            >
-              {isVerifying ? "Verifying..." : "Submit"}
-            </button>
+            <div className="flex justify-between">
+              <button
+                onClick={() => setShowOtpPopup(false)}
+                className="bg-gray-500 text-white px-4 py-2 rounded"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleOtpSubmit}
+                className={`bg-blue-500 text-white px-4 py-2 rounded ${
+                  isVerifying ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+                disabled={isVerifying}
+              >
+                {isVerifying ? "Verifying..." : "Submit"}
+              </button>
+            </div>
           </div>
         </div>
       )}

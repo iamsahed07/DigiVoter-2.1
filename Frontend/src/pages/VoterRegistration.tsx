@@ -52,10 +52,9 @@ export const VoterRegistration = () => {
           ></input>
           <hr />
           <p className="text-xl font-bold">Enter your Voter Id/ Epic No.</p>
-          <input></input>
           <div className="flex justify-center">
             <button
-              className="bg-blue-600 text-white rounded px-8 py-2.5 mt-5 hover:bg-blue-500"
+              className="bg-blue-600 text-white rounded px-8 py-2.5 mt-5 hover:bg-blue-500 mb-10"
               onClick={handleResister}
             >
               REGISTER

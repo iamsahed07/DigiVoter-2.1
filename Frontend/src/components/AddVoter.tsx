@@ -233,40 +233,41 @@ const AddVoter = () => {
                 </div>
                 <div className="flex justify-between px-2">
                   <button
-                    type="button"
-                    onClick={() => navigate("/voter-management")}
-                    className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-lg"
-                  >
-                    Cancel
-                  </button>
-                  <button
                     type="submit"
                     className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition duration-300 ease-in-out transform hover:scale-105"
                   >
                     Submit
                   </button>
-                </div>
-                <div className="flex justify-between px-2 mt-4">
-                  <button
-                    type="button"
-                    onClick={handleBulkUpload}
-                    className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-6 rounded-lg"
-                  >
-                    Add Bulk Voters
-                  </button>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={handleBulkUpload}
+                      className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-6 rounded-lg"
+                    >
+                      Add Bulk Voters
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => navigate("/voter-management")}
+                      className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-lg"
+                    >
+                      Cancel
+                    </button>
+                  </div>
                 </div>
               </form>
             ) : (
               <div className="space-y-4 px-4 pb-4">
-                <div className="flex flex-col">
-                  <label className="text-gray-700 font-semibold">Upload CSV File:</label>
-                  <input
-                    type="file"
-                    accept=".csv"
-                    className="border rounded-lg p-2 mt-1"
-                  />
-                </div>
-                <div className="flex justify-between px-2">
+              <div className="flex flex-col">
+                <label className="text-gray-700 font-semibold">Upload CSV File:</label>
+                <input
+                  type="file"
+                  accept=".csv"
+                  className="border rounded-lg p-2 mt-1"
+                />
+              </div>
+              <div className="flex justify-between px-2">
+                <div className="flex gap-2">
                   <button
                     type="button"
                     onClick={() => setBulkUpload(false)}
@@ -283,30 +284,32 @@ const AddVoter = () => {
                   </button>
                 </div>
               </div>
-            )}
-          </>
-        ) : (
-          <div className="text-center px-4">
-            <p>Voter Added successfully!</p>
-            <div className="flex justify-between mt-4 mb-4">
-              <button
-                onClick={handleAddMoreVoters}
-                className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg"
-              >
-                Add Another Voter
-              </button>
-              <button
-                onClick={() => navigate("/voter-management")}
-                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-lg"
-              >
-                Close
-              </button>
             </div>
+          )}
+        </>
+      ) : (
+        <div className="text-center px-4">
+          <p>Voter Added successfully!</p>
+          <div className="flex justify-between mt-4 mb-4">
+            <button
+              onClick={handleAddMoreVoters}
+              className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg"
+            >
+              Add Another Voter
+            </button>
+            <button
+              onClick={() => navigate("/voter-management")}
+              className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-lg"
+            >
+              Close
+            </button>
           </div>
-        )}
-      </Container>
-    </div>
-  );
+        </div>
+      )}
+    </Container>
+  </div>
+);
 };
 
 export default AddVoter;
+

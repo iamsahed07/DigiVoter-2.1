@@ -110,17 +110,17 @@ const AddElection = () => {
             </div>
             <div className="flex justify-between px-2">
               <button
+                type="submit"
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition duration-300 ease-in-out transform hover:scale-105"
+              >
+                Submit
+              </button>
+              <button
                 type="button"
                 onClick={() => navigate("/election-management")}
                 className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-lg"
               >
                 Cancel
-              </button>
-              <button
-                type="submit"
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition duration-300 ease-in-out transform hover:scale-105"
-              >
-                Submit
               </button>
             </div>
           </form>

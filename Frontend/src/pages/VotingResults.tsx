@@ -2,7 +2,15 @@ import { useState } from "react";
 import { Container } from "../components/Container";
 import { Doughnut } from "react-chartjs-2";
 import Select from "react-select";
-import { Aitmc, Inc, Bjp, Cpim, Aap, Sjp, Rjp } from "../components/PartySymbols";
+import {
+  Aitmc,
+  Inc,
+  Bjp,
+  Cpim,
+  Aap,
+  Sjp,
+  Rjp,
+} from "../components/PartySymbols";
 
 const VotingResults = () => {
   const [selectedElection, setSelectedElection] = useState(null);
@@ -61,7 +69,6 @@ const VotingResults = () => {
       { value: "vadodara", label: "Vadodara" },
     ],
   };
-
 
   const electionResultsData = [
     {
@@ -160,10 +167,10 @@ const VotingResults = () => {
 
   return (
     <div className="min-h-screen flex flex-col w-3/4 float-right mr-10 mt-10">
-      <Container className="bg-white col-start-2 col-end-12 mt-1 mb-6 shadow-lg rounded-lg h-full">
-        <div className="bg-indigo-600 text-white rounded-t-md shadow-lg">
+      <Container className="bg-gray-50 col-start-2 col-end-12 mt-1 mb-6 shadow-lg rounded-lg h-full">
+        <div className="bg-indigo-500 text-white rounded-t-md shadow-lg">
           <div className="flex justify-center items-center h-12">
-            <h1 className="py-2 text-lg font-bold uppercase">
+            <h1 className="py-2 text-2xl font-bold uppercase">
               Results and Analytics
             </h1>
           </div>
@@ -215,7 +222,7 @@ const VotingResults = () => {
                 className="w-full flex justify-center items-center"
                 style={{ height: "300px" }}
               >
-                <div className="h-full w-full p-4 bg-white shadow-md rounded-lg">
+                <div className="h-full w-full p-4 bg-gray-50 shadow-md rounded-lg">
                   <Doughnut data={voteData} options={options} />
                 </div>
               </div>
@@ -227,7 +234,7 @@ const VotingResults = () => {
               {electionResultsData.map((election, index) => (
                 <li
                   key={election.id}
-                  className="bg-gray-100 p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
+                  className="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
                 >
                   <div className="grid grid-cols-12 gap-4 items-center">
                     <div className="col-span-1 flex justify-center">
