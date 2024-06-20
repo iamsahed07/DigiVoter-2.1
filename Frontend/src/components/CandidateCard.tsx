@@ -1,7 +1,7 @@
 // import React from 'react';
-import CandidatePhotos from "../components/CandidatePhotos"; // Corrected import path
+import CandidatePhotos from "../components/CandidatePhotos"; 
 import PartyColors from "../components/PartyColors";
-import { Aitmc, Inc, Bjp, Cpim, Aap, Sjp, Rjp } from "../components/PartySymbols"; // Corrected import path
+import { Aitmc, Inc, Bjp, Cpim, Aap, Sjp, Rjp } from "../components/PartySymbols"; 
 
 const CandidateCard = ({ id, photoKey, name, party, age }) => {
   // Get the party color

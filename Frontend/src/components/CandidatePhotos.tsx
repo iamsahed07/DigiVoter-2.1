@@ -1,8 +1,3 @@
-// CandidatePhotos.tsx
-
-// import React from 'react';
-
-// Import candidate photos
 import Photo1 from '../assets/candidate_photos/rahul_gandhi.png';
 import Photo2 from '../assets/candidate_photos/amit_shah.png';
 import Photo3 from '../assets/candidate_photos/mamata_banerjee.png';
