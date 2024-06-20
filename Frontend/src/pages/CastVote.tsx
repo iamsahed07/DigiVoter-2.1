@@ -1,9 +1,16 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Container } from "../components/Container";
-// import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { getAuthState } from "../store/auth";
-import { Aitmc, Inc, Bjp, Cpim, Aap, Sjp, Rjp } from "../components/PartySymbols";
+import {
+  Aitmc,
+  Inc,
+  Bjp,
+  Cpim,
+  Aap,
+  Sjp,
+  Rjp,
+} from "../components/PartySymbols";
 import * as CandidatePhotos from "../components/CandidatePhotos";
 import { ImArrowLeft } from "react-icons/im";
 import client from "../api/client";
@@ -73,13 +80,29 @@ export default function CastVote() {
   const [showOtpPopup, setShowOtpPopup] = useState(false);
   const [otp, setOtp] = useState("");
   const [isVerifying, setIsVerifying] = useState(false);
+  const [timer, setTimer] = useState(60);
+  const [isResendDisabled, setIsResendDisabled] = useState(true);
+
+  useEffect(() => {
+    let countdown;
+    if (showOtpPopup && timer > 0) {
+      countdown = setInterval(() => {
+        setTimer((prevTimer) => prevTimer - 1);
+      }, 1000);
+    } else if (timer === 0) {
+      setIsResendDisabled(false);
+      clearInterval(countdown);
+    }
+
+    return () => clearInterval(countdown);
+  }, [showOtpPopup, timer]);
 
   const handleVoteClick = async (candidateId) => {
     setVotedCandidateId(candidateId);
     setTimeout(() => {
       setShowOtpPopup(true);
     }, 1000);
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     try {
       const response = await client.post(
         "/vote/sendOtpForVote",
@@ -106,15 +129,19 @@ export default function CastVote() {
   const handleOtpSubmit = async () => {
     setIsVerifying(true);
     try {
-      const response = await client.post("/auth/verifyToken", {
-        adhar: profile.adhar,
-        token: otp,
-      },{
-        params:{
-          useAdhar: 'yes',
-          useMobile: 'no'
+      const response = await client.post(
+        "/auth/verifyToken",
+        {
+          adhar: profile.adhar,
+          token: otp,
+        },
+        {
+          params: {
+            useAdhar: "yes",
+            useMobile: "no",
+          },
         }
-      });
+      );
 
       if (response.data.success) {
         alert("Vote counted successfully!");
@@ -128,6 +155,29 @@ export default function CastVote() {
     } catch (error) {
       alert("Failed to verify OTP. Please try again.");
       setIsVerifying(false);
+    }
+  };
+
+  const handleResendOtp = async () => {
+    setTimer(60);
+    setIsResendDisabled(true);
+    const token = localStorage.getItem("token");
+    try {
+      const response = await client.post(
+        "/vote/sendOtpForVote",
+        {
+          adhar: profile?.adhar,
+        },
+        {
+          headers: {
+            Authorization: "Bearer " + token,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      alert(response.data.message);
+    } catch (error) {
+      alert("Failed to resend OTP. Please try again.");
     }
   };
 
@@ -164,7 +214,9 @@ export default function CastVote() {
               )}
               <ImArrowLeft
                 className={`text-lg ml-auto mr-auto ${
-                  votedCandidateId === candidate.id ? "text-red-500" : "text-gray-600"
+                  votedCandidateId === candidate.id
+                    ? "text-red-500"
+                    : "text-gray-600"
                 }`}
               />
               <button
@@ -183,7 +235,9 @@ export default function CastVote() {
       {showOtpPopup && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg shadow-lg">
-            <h2 className="text-lg font-semibold mb-4">Check your Aadhaar registered email to verify OTP</h2>
+            <h2 className="text-lg font-semibold mb-4">
+              Check your Aadhaar registered email to verify OTP
+            </h2>
             <input
               type="text"
               value={otp}
@@ -195,7 +249,7 @@ export default function CastVote() {
             <div className="flex justify-between">
               <button
                 onClick={() => setShowOtpPopup(false)}
-                className="bg-gray-500 text-white px-4 py-2 rounded"
+                className="bg-red-500 text-white px-4 py-2 rounded"
               >
                 Cancel
               </button>
@@ -207,6 +261,19 @@ export default function CastVote() {
                 disabled={isVerifying}
               >
                 {isVerifying ? "Verifying..." : "Submit"}
+              </button>
+            </div>
+            <div className="flex justify-between mt-4">
+              <button
+                onClick={handleResendOtp}
+                className={`${
+                  isResendDisabled
+                    ? "bg-red-200 text-gray-700 cursor-not-allowed"
+                    : "bg-green-100"
+                } px-6 py-2 rounded-full shadow-md hover:scale-105`}
+                disabled={isResendDisabled}
+              >
+                Resend OTP in {isResendDisabled && <span>({timer})</span>}
               </button>
             </div>
           </div>
