@@ -47,7 +47,7 @@ transport.sendMail({
 });
 }
 export const sendOTPForVoteMail = async(token:string,profile:Profile)=>{
-const {name,email,userId} = profile;
+const {name,email} = profile;
 
 const welcomeMessage = `Hi ${name}. Use the given OTP to give a vote.`;
 const transport = generateMailTransporter();

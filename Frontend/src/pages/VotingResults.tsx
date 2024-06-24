@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Container } from "../components/Container";
 import { Doughnut } from "react-chartjs-2";
 import Select from "react-select";
@@ -10,26 +10,94 @@ import {
   Aap,
   Sjp,
   Rjp,
+  PartyLogo,
 } from "../components/PartySymbols";
+import { useSelector } from "react-redux";
+import { getElectionsState } from "../store/election";
+import client from "../api/client";
+import { getAuthState } from "../store/auth";
+import { partyDetails } from "../utils/color";
 
 const VotingResults = () => {
   const [selectedElection, setSelectedElection] = useState(null);
   const [selectedState, setSelectedState] = useState(null);
   const [selectedConstituency, setSelectedConstituency] = useState(null);
+  const {elections} = useSelector(getElectionsState);
+  const [electionResultsData,setElectionResultData] = useState([]);
+  const {profile} = useSelector(getAuthState);
+  // console.log(elections);
+  // console.log(selectedElection);
+  // const states = Object.keys(selectedElection.areas);
+  // console.log(states);
+  // console.log(selectedState)
+  // console.log(selectedConstituency);
+  console.log(electionResultsData);
+
+  useEffect(()=>{
+    const func = async()=>{
+      const token = localStorage.getItem('token');
+      const { data } = await client.patch(
+        "candidates/get-based-on-constituency",
+        {
+          state: selectedState.label,
+          constituency: selectedConstituency.label,
+        },
+        {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        }
+      );
+      // console.log(data);
+      const voterResult = data.candidateBasedConstituency;
+      voterResult.sort((a, b) => b.votes - a.votes);
+      // console.log(voterResult);
+      setElectionResultData(voterResult);
+    }
+    if(selectedState&&selectedConstituency){
+      func();
+    }
+    const func2 = async()=>{
+      const token = localStorage.getItem('token');
+      const { data } = await client.patch(
+        "candidates/get-based-on-constituency",
+        {
+          state: profile.state,
+          constituency: profile.constituency,
+        },
+        {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        }
+      );
+      // console.log(data);
+      const voterResult = data.candidateBasedConstituency;
+      voterResult.sort((a,b)=> b.votes - a.votes);
+      // console.log(voterResult);
+      setElectionResultData(voterResult);
+      
+    }
+
+      func2();
+
+
+  },[selectedState,selectedConstituency])
+
 
   const electionResults = [
     { id: 1, name: "Lok Shaba Results" },
     { id: 2, name: "Bidhan Sabha Results" },
   ];
 
-  const states = [
-    { id: 1, name: "Maharashtra" },
-    { id: 2, name: "Uttar Pradesh" },
-    { id: 3, name: "Bihar" },
-    { id: 4, name: "West Bengal" },
-    { id: 5, name: "Karnataka" },
-    { id: 6, name: "Gujarat" },
-  ];
+  // const states = [
+  //   { id: 1, name: "Maharashtra" },
+  //   { id: 2, name: "Uttar Pradesh" },
+  //   { id: 3, name: "Bihar" },
+  //   { id: 4, name: "West Bengal" },
+  //   { id: 5, name: "Karnataka" },
+  //   { id: 6, name: "Gujarat" },
+  // ];
 
   const constituencies = {
     Maharashtra: [
@@ -70,38 +138,38 @@ const VotingResults = () => {
     ],
   };
 
-  const electionResultsData = [
-    {
-      id: 1,
-      party: "All India Trinamool Congress (TMC)",
-      votes: 1000,
-      logo: <Aitmc />,
-    },
-    {
-      id: 2,
-      party: "Indian National Congress (INC)",
-      votes: 1500,
-      logo: <Inc />,
-    },
-    {
-      id: 3,
-      party: "Bharatiya Janata Party (BJP)",
-      votes: 2000,
-      logo: <Bjp />,
-    },
-    {
-      id: 4,
-      party: "Communist Party of India (Marxist) (CPIM)",
-      votes: 800,
-      logo: <Cpim />,
-    },
-    { id: 5, party: "Aam Aadmi Party (AAP)", votes: 1200, logo: <Aap /> },
-    { id: 6, party: "Samajwadi Janta Party (SP)", votes: 600, logo: <Sjp /> },
-    { id: 7, party: "Rastaya Janta Party (RSP)", votes: 400, logo: <Rjp /> },
-  ];
+  // const electionResultsData = [
+  //   {
+  //     id: 1,
+  //     party: "All India Trinamool Congress (TMC)",
+  //     votes: 1000,
+  //     logo: <Aitmc />,
+  //   },
+  //   {
+  //     id: 2,
+  //     party: "Indian National Congress (INC)",
+  //     votes: 1500,
+  //     logo: <Inc />,
+  //   },
+  //   {
+  //     id: 3,
+  //     party: "Bharatiya Janata Party (BJP)",
+  //     votes: 2000,
+  //     logo: <Bjp />,
+  //   },
+  //   {
+  //     id: 4,
+  //     party: "Communist Party of India (Marxist) (CPIM)",
+  //     votes: 800,
+  //     logo: <Cpim />,
+  //   },
+  //   { id: 5, party: "Aam Aadmi Party (AAP)", votes: 1200, logo: <Aap /> },
+  //   { id: 6, party: "Samajwadi Janta Party (SP)", votes: 600, logo: <Sjp /> },
+  //   { id: 7, party: "Rastaya Janta Party (RSP)", votes: 400, logo: <Rjp /> },
+  // ];
 
   const voteData = {
-    labels: electionResultsData.map((result) => result.party),
+    labels: electionResultsData.map((result) => partyDetails[result.party].party),
     datasets: [
       {
         data: electionResultsData.map((result) => result.votes),
@@ -181,28 +249,50 @@ const VotingResults = () => {
               <div className="w-1/3 pr-2">
                 <Select
                   className="button-style"
-                  options={electionResults.map((election) => ({
-                    value: election.id,
-                    label: election.name,
+                  options={elections.map((election) => ({
+                    value: election._id,
+                    label: election.electionName,
+                    areas: election.areas
                   }))}
                   onChange={handleSelectElection}
                   value={selectedElection}
                   placeholder="Select Election"
                 />
               </div>
+
+              {selectedElection?
+              
               <div className="w-1/3 px-2">
                 <Select
                   className="button-style"
-                  options={states.map((state) => ({
-                    value: state.id,
-                    label: state.name,
+                  options={Object.keys(selectedElection.areas).map((state) => ({
+                    value: state,
+                    label: state,
                   }))}
                   onChange={handleSelectState}
                   value={selectedState}
                   placeholder="Select State"
-                  isDisabled={!selectedElection}
+                  // isDisabled={!selectedElection}
+                />
+              </div> : 
+            
+              <div className="w-1/3 px-2">
+                <Select
+                  className="button-style"
+                  options={[].map((state) => ({
+                    value: state,
+                    label: state,
+                  }))}
+                  onChange={handleSelectState}
+                  value={selectedState}
+                  placeholder="Select State"
+                  // isDisabled={!selectedElection}
                 />
               </div>
+            
+            }
+              
+
               <div className="w-1/3 pl-2">
                 <Select
                   className="button-style"
@@ -231,9 +321,9 @@ const VotingResults = () => {
               Election Results
             </h2>
             <ul className="space-y-4">
-              {electionResultsData.map((election, index) => (
+              {electionResultsData?.map((election, index) => (
                 <li
-                  key={election.id}
+                  key={election._id}
                   className="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
                 >
                   <div className="grid grid-cols-12 gap-4 items-center">
@@ -255,7 +345,8 @@ const VotingResults = () => {
                       className="col-span-2 flex justify-center"
                       style={{ width: "1.5cm", height: "1.5cm" }}
                     >
-                      {election.logo}
+                      {/* {election.} */}
+                      <PartyLogo party={election.party}/>
                     </div>
                     <div className="col-span-4 flex items-center">
                       <p className="text-sm font-medium text-gray-800">

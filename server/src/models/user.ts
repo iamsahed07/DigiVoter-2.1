@@ -19,6 +19,7 @@ export interface UserDocument {
   voterId: string;
   mobile: string;
   address: string;
+  gender:string;
   imgUrl: string;
 }
 interface Voter extends UserDocument {
@@ -37,7 +38,6 @@ const userSchema = new Schema<Voter, {}, Methods>(
       required: true,
       trim: true,
     },
-
     state: {
       type: String,
       required: true,
@@ -67,6 +67,10 @@ const userSchema = new Schema<Voter, {}, Methods>(
       type: String,
       trim: true,
       required: true,
+    },
+    gender: {
+      type: String,
+      trim: true,
     },
     voterId: {
       type: String,

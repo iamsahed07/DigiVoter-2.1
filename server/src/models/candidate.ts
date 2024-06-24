@@ -1,15 +1,16 @@
-import { party, partyType, role } from "#/@types";
+
 import { Model, Schema, model } from "mongoose";
-import { constituency,constituencyTypes,statesTypes, States } from "#/utils/constituency";
+import { number } from "yup";
 interface candidateDocument {
   electionName: string;
   candidateName: string;
   party: string;
-  constituency: constituencyTypes;
+  constituency: string;
   adhar: string;
-  state: statesTypes;
+  state: string;
   dob: string;
   imgUrl: string;
+  votes:number;
 }
 const candidateSchema = new Schema<candidateDocument>(
   {
@@ -22,17 +23,14 @@ const candidateSchema = new Schema<candidateDocument>(
     },
     party: {
       type: String,
-      enum: party,
     },
     state: {
       type: String,
       required: true,
-      enum: States,
     },
     constituency: {
       type: String,
       required: true,
-      enum: constituency,
     },
     adhar: {
       type: String,
@@ -47,6 +45,10 @@ const candidateSchema = new Schema<candidateDocument>(
     imgUrl:{
       type:String,
       trim:true,
+    },
+    votes:{
+      type:Number,
+      default:0
     }
   },
   { timestamps: true }

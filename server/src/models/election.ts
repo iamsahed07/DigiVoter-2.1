@@ -1,15 +1,9 @@
 import { statusType, status } from "#/@types";
 import { Model, ObjectId, Schema, model } from "mongoose";
-import { constituency,constituencyTypes,statesTypes,States } from "#/utils/constituency";
 interface electionDocument {
   id: ObjectId;
   electionName: string;
-  // status: statusType;
-  // candidatesAsConstituency: ObjectId[];
-  // electionResult: Number;
-  // allVotes: ObjectId[];
-  states: [statesTypes];
-  constituencies: [constituencyTypes];
+  areas: {[key:string]:[string]};
   startDate: string;
   endDate: string;
 }
@@ -19,14 +13,9 @@ const electionSchema = new Schema<electionDocument>(
       type: String,
       required: true,
     },
-    states: {
-      type: [String],
-      enum:States,
+    areas: {
+      type: {},
       required: true,
-    },
-    constituencies: {
-      type: [String],
-      enum:constituency,
     },
     startDate: {
       type: String,

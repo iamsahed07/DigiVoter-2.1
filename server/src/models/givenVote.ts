@@ -1,13 +1,13 @@
 import { Model, ObjectId, Schema, model } from "mongoose";
 interface givenVoteDocument {
-  voteRef: ObjectId;
+  electionRef: ObjectId;
   voterRef: ObjectId;
 }
 const givenVoteSchema = new Schema<givenVoteDocument>(
   {
-    voteRef: {
+    electionRef: {
       type: Schema.Types.ObjectId,
-      ref: "VoteData",
+      ref: "Election",
       required: true,
     },
     voterRef: {

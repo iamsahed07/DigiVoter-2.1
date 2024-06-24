@@ -3,20 +3,14 @@ import { RootState } from ".";
 
 export interface CandidateProfile {
   _id: any;
-  name: string;
-  email: string;
-  verified: boolean;
-  adhar: string;
-  role: string;
-  dob: string;
-  voterId: string;
-  mobile: string;
-  address: string;
+  candidateName: string;
+  electionName: string;
   party: string;
-  age: number;
-  constituency: string;
   state: string;
-  imageurl: string;
+  constituency: string;
+  adhar: string;
+  dob: string;
+  imgUrl: string;
 }
 
 interface CandidateState {

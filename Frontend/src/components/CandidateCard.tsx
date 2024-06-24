@@ -4,6 +4,8 @@ import PartyColors from "../components/PartyColors";
 import { Aitmc, Inc, Bjp, Cpim, Aap, Sjp, Rjp } from "../components/PartySymbols"; 
 
 const CandidateCard = ({ id, photoKey, name, party, age }) => {
+
+  console.log(id, photoKey, name, party, age);
   // Get the party color
   const color = PartyColors[party] || "#CCCCCC";
 
@@ -16,30 +18,30 @@ const CandidateCard = ({ id, photoKey, name, party, age }) => {
   };
 
   // Mapping photo key to the respective photo
-  const CandidatePhoto = CandidatePhotos[photoKey]; // Changed variable name to singular form
+  // const CandidatePhoto = CandidatePhotos[photoKey]; // Changed variable name to singular form
 
   // Mapping party to the respective symbol component
   let PartySymbol;
   switch (party) {
-    case "All India Trinamool Congress (AITMC)":
+    case "TMC":
       PartySymbol = Aitmc;
       break;
-    case "Indian National Congress (INC)":
+    case "INC":
       PartySymbol = Inc;
       break;
-    case "Bharatiya Janata Party (BJP)":
+    case "BJP":
       PartySymbol = Bjp;
       break;
-    case "Communist Party of India (Marxist) (CPIM)":
+    case "CPIM":
       PartySymbol = Cpim;
       break;
-    case "Aam Aadmi Party (AAP)":
+    case "AAP":
       PartySymbol = Aap;
       break;
-    case "Samajwadi Party (SJP)":
+    case "SJP":
       PartySymbol = Sjp;
       break;
-    case "Rashtriya Janata Party (RJP)":
+    case "RJP":
       PartySymbol = Rjp;
       break;
     default:
@@ -50,10 +52,11 @@ const CandidateCard = ({ id, photoKey, name, party, age }) => {
     <div className="bg-white shadow-md rounded-lg overflow-hidden">
       {/* Candidate photo */}
       <div className="flex justify-center">
-        <CandidatePhoto /> {/* Changed component name to singular form */}
+        {/* <CandidatePhoto /> Changed component name to singular form */}
+        <img src={photoKey} alt={name} />,
       </div>
       {/* Party color horizontal line */}
-      <div style={{ backgroundColor: color, height: '4px' }}></div>
+      <div style={{ backgroundColor: color, height: "4px" }}></div>
       {/* Candidate details */}
       <div className="p-4 flex items-center justify-between">
         <div>
@@ -72,7 +75,9 @@ const CandidateCard = ({ id, photoKey, name, party, age }) => {
         </div>
       </div>
       {/* Search button */}
-      <div className="p-4 flex justify-center"> {/* Adjusted position to center */}
+      <div className="p-4 flex justify-center">
+        {" "}
+        {/* Adjusted position to center */}
         <button
           onClick={handleGoogleSearch}
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out"

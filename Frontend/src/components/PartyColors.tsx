@@ -2,13 +2,13 @@
 
 // Define party symbols and colors
 const PartyColors = {
-  "All India Trinamool Congress (AITMC)": "#008000",
-  "Indian National Congress (INC)": "#0F56B3",
-  "Bharatiya Janata Party (BJP)": "#FF9933",
-  "Communist Party of India (Marxist) (CPIM)": "#FF0000",
-  "Aam Aadmi Party (AAP)": "#00FFFF",
-  "Samajwadi Party (SJP)": "#0000FF",
-  "Rashtriya Janata Party (RJP)": "#800080",
+  "TMC": "#008000",
+  "INC": "#0F56B3",
+  "BJP": "#FF9933",
+  "CPIM": "#FF0000",
+  "AAP": "#00FFFF",
+  "SP": "#0000FF",
+  "RJP": "#800080",
 };
 
 export default PartyColors;

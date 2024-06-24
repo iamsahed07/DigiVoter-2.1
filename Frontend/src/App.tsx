@@ -4,6 +4,7 @@ import {
   createBrowserRouter,
   createRoutesFromElements,
 } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import ElectionManagement from "./pages/ElectionManagement";
@@ -24,6 +25,7 @@ import { InnerLayout } from "./components/InnerLayout";
 import { InnerLayoutAdmin } from "./components/InnerLayoutAdmin";
 import { Information } from "./pages/Information";
 import { VoterRegistration } from "./pages/VoterRegistration";
+import { ScrollRestoration } from "react-router-dom";
 
 
 const router = createBrowserRouter(
@@ -63,6 +65,7 @@ const router = createBrowserRouter(
 function App() {
   return (
     <div className="bg-[#EEEEEE]">
+      <Toaster />
       <RouterProvider router={router} />
     </div>
   );

@@ -40,6 +40,9 @@ export const CreateUserSchema = yup.object().shape({
     .trim()
     .length(10, "Invalid mobile no.")
     .required("Mobile no is missing!"),
+  gender: yup
+    .string()
+    .required("Gender is missing!"),
   address: yup.string().trim().required("address no is missing!"),
 });
 

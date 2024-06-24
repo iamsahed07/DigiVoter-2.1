@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Container } from "../components/Container";
+import client from "../api/client";
+import toast from "react-hot-toast";
 
 const AddElection = () => {
   const navigate = useNavigate();
@@ -31,15 +33,26 @@ const AddElection = () => {
     setElection((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
     if (!confirmation) {
       alert("Please confirm before submitting.");
       return;
     }
-    // Handle form submission logic here
-    console.log("Election details:", election);
-    setSubmitted(true);
+     try {
+       const { data } = await client.post("elections/create", {
+         electionName: election.name,
+         startDate: election.startDate,
+         endDate: election.endDate,
+       });
+       console.log("Election details:", election);
+       console.log(data);
+       if (data.success) {
+         setSubmitted(true);
+       }
+     } catch (error) {
+       toast.error("Something went wrong");
+     }
   };
 
   const handleAddMoreElections = () => {

@@ -1,7 +1,7 @@
 import { requestCandidate } from "#/@types";
-import { RequestHandler } from "express";
+import { RequestHandler, Response } from "express";
 import Candidate from "#/models/candidate";
-import CandidatesAsConstituency from "#/models/candidatesAsConstituency";
+
 import { RequestWithFiles } from "#/middleware/fileParser";
 import formidable from "formidable";
 import cloudinary from "#/cloud";
@@ -18,9 +18,9 @@ interface CreateAddCandidateRequest extends RequestWithFiles {
   };
 }
 
-export const addCandidate: RequestHandler = async (
+export const addCandidate = async (
   req: CreateAddCandidateRequest,
-  res
+  res: Response
 ) => {
   try {
     const {
@@ -33,18 +33,30 @@ export const addCandidate: RequestHandler = async (
       dob,
     } = req.body;
     const candidate = await Candidate.findOne({ adhar });
+    // console.log(candidate);
+    // console.log(
+    //   electionName,
+    //   candidateName,
+    //   party,
+    //   constituency,
+    //   adhar,
+    //   state,
+    //   dob
+    // );
     if (candidate)
       return res
-        .status(500)
+        .status(300)
         .json({ error: "Candidate already exists", success: false });
     const imgFile = req.files?.profile as formidable.File;
+    // console.log(imgFile);
     if (!imgFile)
       return res.status(422).json({ error: "Image file is missing!" });
 
     const imgRes = await cloudinary.uploader.upload(imgFile.filepath, {
       resource_type: "image",
     });
-    const newCandidate = await Candidate.create({
+    // console.log(imgRes.secure_url)
+    const newCandidate = new Candidate({
       electionName,
       candidateName,
       party,
@@ -77,24 +89,37 @@ export const addCandidate: RequestHandler = async (
       success: true,
     });
   } catch (err: any) {
-    res.status(500).json({ error: err.message, success: false });
+    res.status(300).json({ error: err.message, success: false });
   }
 };
 
 export async function getAllCandidateBasedOnConstituency(req: any, res: any) {
   try {
-    const { constituency } = req.body;
-    const candidates = await Candidate.find({ constituency });
-    const cadidateBasedConstituency = await CandidatesAsConstituency.findOne({
+    const { state, constituency } = req.body;
+    const candidateBasedConstituency = await Candidate.find({
+      state,
       constituency,
     });
+    res.status(200).json({
+      message: "Candidate cadidateBasedConstituency successfully fetched",
+      success: true,
+      candidateBasedConstituency,
+    });
+  } catch (err: any) {
+    res.status(400).json({ message: err.message, success: false });
+  }
+}
+
+export async function getAllCandidate(req: any, res: any) {
+  try {
+    const candidates = await Candidate.find({});
+    // console.log(candidates)
     res.status(200).json({
       message: "Candidate successfully fetched",
       success: true,
       candidates,
-      id: cadidateBasedConstituency?._id,
     });
   } catch (err: any) {
-    res.status(500).json({ message: err.message, success: false });
+    res.status(400).json({ message: err.message, success: false });
   }
 }

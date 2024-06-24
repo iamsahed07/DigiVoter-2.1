@@ -11,6 +11,7 @@ import {
   Sjp,
   Rjp,
 } from "../components/PartySymbols";
+import { partyDetails } from "../utils/color";
 
 const ResultsAnalytics = () => {
   const [selectedElection, setSelectedElection] = useState(null);
@@ -101,7 +102,9 @@ const ResultsAnalytics = () => {
   ];
 
   const voteData = {
-    labels: electionResultsData.map((result) => result.party),
+    labels: electionResultsData.map(
+      (result) => partyDetails[result.party]?.party
+    ),
     datasets: [
       {
         data: electionResultsData.map((result) => result.votes),

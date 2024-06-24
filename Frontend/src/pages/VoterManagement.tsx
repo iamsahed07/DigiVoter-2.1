@@ -1,9 +1,17 @@
 // import React from "react";
+import { useEffect } from "react";
+import client from "../api/client";
 import { Container } from "../components/Container";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { getAuthState, updateProfiles } from "../store/auth";
+import { calculateAge } from "../utils/helper";
 
 const VoterManagement = () => {
   const navigate = useNavigate();
+  const dispatch  = useDispatch();
+  const {profiles} = useSelector(getAuthState);
+  console.log(profiles);
 
   const handleAddVoter = () => {
     navigate("/add-voter");
@@ -17,7 +25,7 @@ const VoterManagement = () => {
     navigate(`/edit-voter/${voterId}`);
   };
 
-  const handleRemoveVoter = (voterId) => {
+  const handleRemoveVoter = (voterId:string) => {
     // Implement remove logic
     console.log(`Removing voter with id: ${voterId}`);
   };
@@ -29,6 +37,15 @@ const VoterManagement = () => {
     { id: 3, name: "Voter 3", age: 25, gender: "Male", address: "Address 3", assembly: "Assembly 3" },
     { id: 4, name: "Voter 4", age: 40, gender: "Female", address: "Address 4", assembly: "Assembly 4" },
   ];
+    useEffect(() => {
+      const func1 = async () => {
+        const { data } = await client.get("auth/getAllUser");
+        // console.log(data);
+        dispatch(updateProfiles(data.users));
+      };
+      func1();
+    }, []);
+  
 
   return (
     <div className="min-h-screen flex flex-col w-3/4 float-right mr-10 mt-10">
@@ -55,24 +72,34 @@ const VoterManagement = () => {
               </button>
             </div>
           </div>
-          <h3 className="text-2xl font-semibold mb-4">Total Voters: {voters.length}</h3>
+          <h3 className="text-2xl font-semibold mb-4">
+            Total Voters: {voters.length}
+          </h3>
           <ul className="grid grid-cols-1 gap-4">
-            {voters.map((voter, index) => (
-              <li key={voter.id} className="bg-white p-4 rounded-lg flex items-center justify-between">
+            {profiles?.map((voter, index) => (
+              <li
+                key={voter.id}
+                className="bg-white p-4 rounded-lg flex items-center justify-between"
+              >
                 <div className="w-1/5">
-                  <p className="text-gray-600">Sl.No.: {index + 1}</p>
-                  <p className="text-gray-600">Voter Id: {voter.id}</p>
+                  <p className="text-gray-600">Sl. No.: {index + 1}</p>
+                  <p className="text-gray-600">Voter Id: {voter.voterId}</p>
                 </div>
                 <div className="w-1/5">
                   <p className="text-gray-600">Name: {voter.name}</p>
-                  <p className="text-gray-600">Age: {voter.age}</p>
+                  <p className="text-gray-600">Age: {calculateAge(voter.dob)}</p>
                 </div>
                 <div className="w-1/5">
                   <p className="text-gray-600">Gender: {voter.gender}</p>
                   <p className="text-gray-600">Address: {voter.address}</p>
                 </div>
                 <div className="w-1/5">
-                  <p className="text-gray-600">Assembly: {voter.assembly}</p>
+                  <p className="text-gray-600">
+                    constituency: {voter.constituency}
+                  </p>
+                </div>
+                <div className="w-1/5">
+                  <p className="text-gray-600">Aadhaar: {voter.adhar}</p>
                 </div>
                 <div className="w-1/5">
                   <button
@@ -98,3 +125,5 @@ const VoterManagement = () => {
 };
 
 export default VoterManagement;
+
+

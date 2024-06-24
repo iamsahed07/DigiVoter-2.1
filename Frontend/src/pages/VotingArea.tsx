@@ -1,196 +1,71 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Container } from "../components/Container";
 import CandidateCard from "../components/CandidateCard";
-// import * as CandidatePhotos from "../components/CandidatePhotos";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
-
-const elections = [
-  { id: "1", name: "Lok Sabha Election", status: "live" },
-  { id: "2", name: "Vidhan Sabha", status: "upcoming" },
-  { id: "3", name: "Other Election", status: "upcoming" },
-];
-
-const candidatesData = {
-  "1": [
-    {
-      id: "1",
-      name: "Rahul Gandhi",
-      party: "Indian National Congress (INC)",
-      photoKey: "Candidate1",
-      age: 40,
-    },
-    {
-      id: "2",
-      name: "Amit Shah",
-      party: "Bharatiya Janata Party (BJP)",
-      photoKey: "Candidate2",
-      age: 55,
-    },
-    {
-      id: "3",
-      name: "Mamata Banerjee",
-      party: "All India Trinamool Congress (AITMC)",
-      photoKey: "Candidate3",
-      age: 66,
-    },
-    // Add other candidates for Lok Sabha election
-    {
-      id: "4",
-      name: "Arvind Kejriwal",
-      party: "Aam Aadmi Party (AAP)",
-      photoKey: "Candidate4",
-      age: 52,
-    },
-    {
-      id: "5",
-      name: "Akhilesh Yadav",
-      party: "Samajwadi Party (SJP)",
-      photoKey: "Candidate5",
-      age: 80,
-    },
-    {
-      id: "6",
-      name: "Biman Bose",
-      party: "Communist Party of India (Marxist) (CPIM)",
-      photoKey: "Candidate6",
-      age: 60,
-    },
-    {
-      id: "7",
-      name: "Shankersinh Vaghela",
-      party: "Rashtriya Janata Party (RJP)",
-      photoKey: "Candidate7",
-      age: 75,
-    },
-  ],
-  "2": [
-    // Duplicate candidates for Vidhan Sabha election
-    {
-      id: "8",
-      name: "Sonia Gandhi",
-      party: "Indian National Congress (INC)",
-      photoKey: "Candidate8",
-      age: 65,
-    },
-    {
-      id: "9",
-      name: "Rajnath Singh",
-      party: "Bharatiya Janata Party (BJP)",
-      photoKey: "Candidate9",
-      age: 70,
-    },
-    {
-      id: "10",
-      name: "Sukhbir Singh Badal",
-      party: "Shiromani Akali Dal ()",
-      photoKey: "Candidate10",
-      age: 50,
-    },
-    {
-      id: "11",
-      name: "Mamata Banerjee",
-      party: "All India Trinamool Congress (AITMC)",
-      photoKey: "Candidate3",
-      age: 66,
-    },
-    {
-      id: "12",
-      name: "Akhilesh Yadav",
-      party: "Samajwadi Party (SJP)",
-      photoKey: "Candidate12",
-      age: 48,
-    },
-    {
-      id: "13",
-      name: "Uddhav Thackeray",
-      party: "Shiv Sena",
-      photoKey: "Candidate6",
-      age: 60,
-    },
-    {
-      id: "14",
-      name: "Nitish Kumar",
-      party: "Janata Dal (United)",
-      photoKey: "Candidate14",
-      age: 70,
-    },
-  ],
-  "3": [
-    // Duplicate candidates for Other Election
-    {
-      id: "15",
-      name: "Mamata Banerjee",
-      party: "All India Trinamool Congress (AITMC)",
-      photoKey: "Candidate3",
-      age: 66,
-    },
-    {
-      id: "16",
-      name: "Arvind Kejriwal",
-      party: "Aam Aadmi Party (AAM)",
-      photoKey: "Candidate4",
-      age: 52,
-    },
-    {
-      id: "17",
-      name: "Sharad Pawar",
-      party: "Nationalist Congress Party ()",
-      photoKey: "Candidate5",
-      age: 80,
-    },
-    {
-      id: "18",
-      name: "Naveen Patnaik",
-      party: "Biju Janata Dal ()",
-      photoKey: "Candidate7",
-      age: 75,
-    },
-    {
-      id: "19",
-      name: "Omar Abdullah",
-      party: "National Conference ()",
-      photoKey: "Candidate19",
-      age: 50,
-    },
-    {
-      id: "20",
-      name: "Biplab Kumar Deb",
-      party: "Bharatiya Janata Party (BJP)",
-      photoKey: "Candidate20",
-      age: 50,
-    },
-    {
-      id: "21",
-      name: "Pawan Chamling",
-      party: "Sikkim Democratic Front ()",
-      photoKey: "Candidate21",
-      age: 65,
-    },
-  ],
-};
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { getElectionsState, updateStatesAndConsituency } from "../store/election";
+import { calculateAge, findStatusOfElection } from "../utils/helper";
+import { getCandidateState, updateCandidateProfile } from "../store/candidate";
+import client from "../api/client";
 
 const VotingArea = () => {
-  const [selectedElection, setSelectedElection] = useState(null);
-  const navigate = useNavigate(); // Use useNavigate hook
+  interface selectedECandidatetypes {
+    adhar: string;
+    candidateName: string;
+    constituency: string;
+    createdAt: string;
+    dob: string;
+    electionName: string;
+    imgUrl: string;
+    party: string;
+    state: string;
+    updatedAt: string;
+  }
 
-  const handleElectionClick = (electionId) => {
-    setSelectedElection(electionId);
+  const [selectedElectionCadidates, setSelectedElectionCadidates] = useState<selectedECandidatetypes[]>();
+  const [selectedElectionName, setSelectedElectionName] = useState<string>(""); // New state for selected election name
+  const navigate = useNavigate();
+  const { elections } = useSelector(getElectionsState);
+  const { profiles } = useSelector(getCandidateState);
+  const dispatch = useDispatch();
+
+  const handleElectionClick = (electionName: string) => {
+    let temp = profiles?.filter((item) => item.electionName === electionName);
+    setSelectedElectionCadidates(temp);
+    setSelectedElectionName(electionName); // Set the selected election name
   };
 
-  const handleVoteClick = () => {
-    navigate("/cast-vote"); // Navigate to CastVote page
+  const handleVoteClick = (electionName: string, _id: string) => {
+    let temp = profiles?.filter((item) => item.electionName === electionName);
+    navigate("/cast-vote", { state: { data: temp, electionId: _id } });
+    setSelectedElectionCadidates(temp);
   };
 
   const handleCloseClick = () => {
-    setSelectedElection(null);
+    setSelectedElectionCadidates(null);
+    setSelectedElectionName(""); // Clear the selected election name
   };
 
-  const liveElections = elections.filter(
-    (election) => election.status === "live"
+  const liveElections = elections?.filter(
+    (election) => findStatusOfElection(election.startDate, election.endDate) === "Live"
   );
-  const upcomingElections = elections.filter(
-    (election) => election.status === "upcoming"
+
+  const upcomingElections = elections?.filter(
+    (election) => findStatusOfElection(election.startDate, election.endDate) === "Upcoming"
   );
+
+  useEffect(() => {
+    const func1 = async () => {
+      const { data } = await client.get("elections/get-all-statesAndConsituency");
+      dispatch(updateStatesAndConsituency(data.StatesAndConsituencies));
+    };
+    func1();
+    const func = async () => {
+      const { data } = await client.get("candidates/get-all-candidate");
+      dispatch(updateCandidateProfile(data.candidates));
+    };
+    func();
+  }, [dispatch]);
 
   return (
     <div className="min-h-screen flex flex-col w-3/4 float-right mr-10 mt-10">
@@ -200,28 +75,26 @@ const VotingArea = () => {
             <h1 className="py-2 text-2xl font-bold uppercase">Voting Area</h1>
           </div>
         </div>
-        {!selectedElection && (
+        {!selectedElectionCadidates && (
           <div className="grid grid-cols-1 gap-8 p-6">
-            <h2 className="text-2xl font-bold text-left border-b-2 border-gray-300 pb-2">
-              Live Elections
-            </h2>
-            {liveElections.map((election) => (
+            <h2 className="text-2xl font-bold text-left border-b-2 border-gray-300 pb-2">Live Elections</h2>
+            {liveElections?.map((election) => (
               <div
-                key={election.id}
+                key={election._id}
                 className="p-4 rounded-lg cursor-pointer transition duration-300 ease-in-out bg-green-200 hover:shadow-lg"
               >
                 <div className="flex justify-between items-center">
-                  <h3 className="text-lg font-semibold">{election.name}</h3>
+                  <h3 className="text-lg font-semibold">{election.electionName}</h3>
                   <div>
                     <button
                       className="text-sm bg-blue-500 text-white rounded-full px-4 py-2 hover:bg-blue-600 transition duration-300 ease-in-out mr-2"
-                      onClick={() => handleElectionClick(election.id)}
+                      onClick={() => handleElectionClick(election.electionName)}
                     >
                       View Candidates
                     </button>
                     <button
                       className="text-sm bg-green-500 text-white rounded-full px-4 py-2 hover:bg-green-600 transition duration-300 ease-in-out"
-                      onClick={handleVoteClick}
+                      onClick={() => handleVoteClick(election.electionName, election._id)}
                     >
                       Vote
                     </button>
@@ -229,19 +102,17 @@ const VotingArea = () => {
                 </div>
               </div>
             ))}
-            <h2 className="text-2xl font-bold text-left border-b-2 border-gray-300 pb-2">
-              Upcoming Elections
-            </h2>
-            {upcomingElections.map((election) => (
+            <h2 className="text-2xl font-bold text-left border-b-2 border-gray-300 pb-2">Upcoming Elections</h2>
+            {upcomingElections?.map((election) => (
               <div
-                key={election.id}
+                key={election._id}
                 className="p-4 rounded-lg cursor-pointer transition duration-300 ease-in-out bg-purple-200 hover:shadow-lg"
               >
                 <div className="flex justify-between items-center">
-                  <h3 className="text-lg font-semibold">{election.name}</h3>
+                  <h3 className="text-lg font-semibold">{election.electionName}</h3>
                   <button
                     className="text-sm bg-blue-500 text-white rounded-full px-4 py-2 hover:bg-blue-600 transition duration-300 ease-in-out"
-                    onClick={() => handleElectionClick(election.id)}
+                    onClick={() => handleElectionClick(election._id)}
                   >
                     View Candidates
                   </button>
@@ -250,13 +121,10 @@ const VotingArea = () => {
             ))}
           </div>
         )}
-        {selectedElection && (
+        {selectedElectionCadidates && (
           <div className="mt-8 p-6 w-full">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-2xl font-bold">
-                Candidates for{" "}
-                {elections.find((e) => e.id === selectedElection).name}
-              </h2>
+              <h2 className="text-2xl font-bold">Candidates for {selectedElectionName.toUpperCase()} ELECTION</h2> {/* Display the selected election name */}
               <button
                 className="text-sm bg-red-500 text-white rounded-full px-4 py-2 hover:bg-red-600 transition duration-300 ease-in-out"
                 onClick={handleCloseClick}
@@ -264,14 +132,18 @@ const VotingArea = () => {
                 Close
               </button>
             </div>
+            <div className="border-t border-gray-300 my-4 mb-8"></div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {candidatesData[selectedElection].map((candidate) => (
+              {selectedElectionCadidates?.map((candidate, index) => (
                 <CandidateCard
-                  key={candidate.id}
-                  photoKey={candidate.photoKey}
-                  name={candidate.name}
+                  key={index}
+                  photoKey={candidate.imgUrl}
+                  name={candidate.candidateName}
                   party={candidate.party}
-                  age={candidate.age} id={undefined}                />
+                  age={calculateAge(candidate.dob)}
+                  id={index + 1}
+                />
               ))}
             </div>
           </div>

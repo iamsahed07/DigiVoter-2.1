@@ -1,7 +1,8 @@
-import { CreateUser, VerifyWhenLogIn } from "#/@types";
+import { CreateAdmin, CreateUser, VerifyWhenLogIn } from "#/@types";
 import EmailVerificationToken from "#/models/emailVerificationToken";
 import User from "#/models/user";
 import Election from "#/models/user";
+import Admin from '#/models/admin';
 
 import { generateToken } from "#/utils/helper";
 import { sendVerificationMail } from "#/utils/mail";
@@ -12,7 +13,7 @@ import jwt from "jsonwebtoken";
 import formidable from "formidable";
 import cloudinary from "#/cloud";
 import { RequestWithFiles } from "#/middleware/fileParser";
-interface CreateAddAddRequest extends RequestWithFiles {
+interface CreateAddRequest extends RequestWithFiles {
   body: {
     name: string;
     email:string;
@@ -25,9 +26,17 @@ interface CreateAddAddRequest extends RequestWithFiles {
     address:string;
     role?:string;
     imgUrl:string;
+    gender:string;
   };
 }
-export const create = async (req: CreateAddAddRequest, res: Response) => {
+interface CreateAddAdminRequest extends Request {
+  body: {
+    username: string;
+    email:string;
+    password:string;
+  };
+}
+export const createUser = async (req: CreateAddRequest, res: Response) => {
   const {
     email,
     name,
@@ -37,7 +46,8 @@ export const create = async (req: CreateAddAddRequest, res: Response) => {
     dob,
     voterId,
     mobile,
-    address
+    address,
+    gender
   } = req.body;
   const user = await User.findOne({ adhar });
   if (user)
@@ -62,9 +72,66 @@ export const create = async (req: CreateAddAddRequest, res: Response) => {
     mobile,
     address,
     imgUrl: imgRes.secure_url,
+    gender
   });
   res.json({
     message: "User create successfully",
+  });
+};
+export const getAllUser = async (req: Request, res: Response) => {
+  try{
+    const users = await User.find({});
+    res.status(200).json({
+      message: "All user fetch successfully",
+      users,
+      success: true
+    });
+  }catch(error){
+    res.status(400).json({
+      error: error, success:false
+    })
+  }
+};
+
+export const createAdmin = async (req: CreateAddAdminRequest, res: Response) => {
+  const {
+    email,
+    username,
+    password
+  } = req.body;
+  const admin = await Admin.findOne({ email });
+  if (admin)
+    return res
+      .status(400)
+      .json({ error: "Admin already exists", success: false });
+  await Admin.create({
+    email,
+    username,
+    password,
+  });
+  res.json({
+    message: "Admin has created successfully", success: true
+  });
+};
+export const adminSignIn = async (req: CreateAdmin, res: Response) => {
+  const {
+    username,
+    password
+  } = req.body;
+  const admin = await Admin.findOne({ username,password });
+  if (!admin)
+    return res
+      .status(400)
+      .json({ error: "Username or password invalid!!!", success: false });
+   const JwtToken =  jwt.sign({ AdminId: admin._id, role: 'Admin'},
+    JWT_SECRET
+    //   {
+    //   expiresIn: '1d'
+    // }
+  );
+  res.json({
+    message: "Admin signIn successfully", success: true,
+    token: JwtToken
   });
 };
 

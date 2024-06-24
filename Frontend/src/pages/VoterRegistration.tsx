@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import client from "../api/client";
 import { getAuthState, updateProfile } from "../store/auth";
 import { useDispatch, useSelector } from "react-redux";
+import toast from "react-hot-toast";
 
 
 export const VoterRegistration = () => {
@@ -14,10 +15,10 @@ export const VoterRegistration = () => {
 
   const handleResister = ()=>{
     if(userInfo.profile?.voterId === epicNo){
-      alert("registration successfull")
+      toast.success("registration successfull");
       navigate("/profile");
     }else{
-      alert("Invalid Epic No!!");
+      toast.error("Invalid Epic No!!");
     }
   }
   useEffect(() => {

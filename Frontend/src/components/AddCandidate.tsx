@@ -1,9 +1,14 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Container } from "../components/Container";
-
+import { useSelector } from "react-redux";
+import { getElectionsState } from "../store/election";
+import client from "../api/client";
 const AddCandidate = () => {
   const navigate = useNavigate();
+  // const dispatch = useDispatch()
+  const { statesAndConsituency,elections } = useSelector(getElectionsState);
+  const states = Object.keys(statesAndConsituency);
   const [candidate, setCandidate] = useState({
     name: "",
     party: "", // Hard coded party options
@@ -14,7 +19,10 @@ const AddCandidate = () => {
     state: "", // Hard coded state options
     constituency: "", // Hard coded constituency options
     dob: "", // Added Date of Birth field
+    electionFor:""
   });
+  // console.log(candidate, elections);
+  // console.log(statesAndConsituency[candidate.state]);
   const [imagePreview, setImagePreview] = useState(null);
   const [confirmation, setConfirmation] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -36,14 +44,30 @@ const AddCandidate = () => {
     reader.readAsDataURL(file);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
     if (!confirmation) {
       alert("Please confirm before submitting.");
       return;
     }
     // Handle form submission logic here
-    console.log("Candidate details:", candidate);
+    // console.log("Candidate details:", candidate);
+    const formData = new FormData();
+    formData.append("candidateName",candidate.name);
+    formData.append("electionName", candidate.electionFor);
+    formData.append("party",candidate.party);
+    formData.append("constituency", candidate.constituency);
+    formData.append("adhar", candidate.aadhaar);
+    formData.append("state",candidate.state);
+    formData.append("dob",candidate.dob);
+    formData.append("profile",candidate.photo);
+
+    const { data } = await client.post("candidates/add-candidate", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data;",
+      },
+    });
+    console.log(data);
     setSubmitted(true);
   };
 
@@ -58,6 +82,7 @@ const AddCandidate = () => {
       state: "",
       constituency: "",
       dob: "",
+      electionFor: "",
     });
     setImagePreview(null);
     setConfirmation(false);
@@ -96,8 +121,18 @@ const AddCandidate = () => {
                   required
                 >
                   <option value="">Select Party</option>
-                  <option value="Party A">Party A</option>
-                  <option value="Party B">Party B</option>
+                  <option value="TMC">All India Trinamool Congress(TMC)</option>
+                  <option value="INC">Indian National Congress (INC)</option>
+                  <option value="BJP">Bharatiya Janata Party(BJP)</option>
+                  <option value="CPIM">
+                    Communist Party of India (Marxist)(CPIM)
+                  </option>
+                  <option value="AAP">Aam Aadmi Party(AAP)</option>
+                  <option value="SP">Samajwadi Party(SP)</option>
+                  <option value="RSP">
+                    Revolutionary Socialist Party(RSP)
+                  </option>
+                  <option value="RJP">Rashtriya Janata Party (RJP)</option>
                 </select>
               </div>
             </div>
@@ -112,8 +147,11 @@ const AddCandidate = () => {
                   required
                 >
                   <option value="">Select State</option>
-                  <option value="State A">State A</option>
-                  <option value="State B">State B</option>
+                  {states.map((item, index) => (
+                    <option value={item} key={index}>
+                      {item}
+                    </option>
+                  ))}
                 </select>
               </div>
               <div className="flex flex-col">
@@ -128,10 +166,34 @@ const AddCandidate = () => {
                   required
                 >
                   <option value="">Select Constituency</option>
-                  <option value="Constituency A">Constituency A</option>
-                  <option value="Constituency B">Constituency B</option>
+                  {statesAndConsituency[candidate.state]?.map(
+                    (item: string, index: number) => (
+                      <option value={item} key={index}>
+                        {item}
+                      </option>
+                    )
+                  )}
                 </select>
               </div>
+            </div>
+            <div className="flex flex-col">
+              <label className="text-gray-700 font-semibold">
+                Election For:
+              </label>
+              <select
+                name="electionFor"
+                value={candidate.electionFor}
+                onChange={handleChange}
+                className="border rounded-lg p-2 mt-1"
+                required
+              >
+                <option value="">Select Election</option>
+                {elections?.map((item, index: number) => (
+                  <option value={item.electionName} key={index}>
+                    {item.electionName}
+                  </option>
+                ))}
+              </select>
             </div>
             <div className="flex flex-col">
               <label className="text-gray-700 font-semibold">

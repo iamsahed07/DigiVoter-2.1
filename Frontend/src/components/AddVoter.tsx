@@ -1,9 +1,14 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Container } from "../components/Container";
+import { getElectionsState } from "../store/election";
+import { useSelector } from "react-redux";
+import client from "../api/client";
 
 const AddVoter = () => {
   const navigate = useNavigate();
+  const { statesAndConsituency} = useSelector(getElectionsState);
+  const states = Object.keys(statesAndConsituency);
   const [voter, setVoter] = useState({
     voterId: "",
     name: "",
@@ -14,6 +19,7 @@ const AddVoter = () => {
     gender: "",
     state: "",
     constituency: "",
+    address:"",
     photo: null,
   });
   const [imagePreview, setImagePreview] = useState(null);
@@ -21,6 +27,7 @@ const AddVoter = () => {
   const [submitted, setSubmitted] = useState(false);
   const [bulkUpload, setBulkUpload] = useState(false);
 
+  console.log(voter);
   const handleChange = (e) => {
     const { name, value } = e.target;
     setVoter((prev) => ({ ...prev, [name]: value }));
@@ -38,18 +45,42 @@ const AddVoter = () => {
     reader.readAsDataURL(file);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!confirmation) {
-      alert("Please confirm before submitting.");
-      return;
-    }
-    // Handle form submission logic here
-    console.log("Voter details:", voter);
-    setSubmitted(true);
+  const handleSubmit = async(e) => {
+     e.preventDefault();
+     if (!confirmation) {
+       alert("Please confirm before submitting.");
+       return;
+     }
+     // Handle form submission logic here
+     // console.log("Candidate details:", candidate);
+     const formData = new FormData();
+     formData.append("name", voter.name);
+     formData.append("email", voter.email);
+     formData.append("adhar", voter.aadhaar);
+     formData.append("state", voter.state);
+     formData.append("constituency", voter.constituency);
+     formData.append("dob", voter.dob);
+     formData.append("voterId", voter.voterId);
+     formData.append("mobile", voter.mobile);
+     formData.append("address", voter.address);
+     formData.append("gender", voter.gender);
+     formData.append("imgUrl", voter.photo);
+
+     const { data } = await client.post(
+       "auth/createUser",
+       formData,
+       {
+         headers: {
+           "Content-Type": "multipart/form-data;",
+         },
+       }
+     );
+     console.log(data);
+     setSubmitted(true);
   };
 
   const handleAddMoreVoters = () => {
+    
     setVoter({
       voterId: "",
       name: "",
@@ -57,6 +88,7 @@ const AddVoter = () => {
       mobile: "",
       email: "",
       aadhaar: "",
+      address:"",
       gender: "",
       state: "",
       constituency: "",
@@ -85,7 +117,9 @@ const AddVoter = () => {
               <form onSubmit={handleSubmit} className="space-y-4 px-4 pb-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="flex flex-col">
-                    <label className="text-gray-700 font-semibold">Voter ID:</label>
+                    <label className="text-gray-700 font-semibold">
+                      Voter ID:
+                    </label>
                     <input
                       type="text"
                       name="voterId"
@@ -109,7 +143,9 @@ const AddVoter = () => {
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="flex flex-col">
-                    <label className="text-gray-700 font-semibold">Date of Birth:</label>
+                    <label className="text-gray-700 font-semibold">
+                      Date of Birth:
+                    </label>
                     <input
                       type="date"
                       name="dob"
@@ -120,7 +156,9 @@ const AddVoter = () => {
                     />
                   </div>
                   <div className="flex flex-col">
-                    <label className="text-gray-700 font-semibold">Mobile:</label>
+                    <label className="text-gray-700 font-semibold">
+                      Mobile:
+                    </label>
                     <input
                       type="text"
                       name="mobile"
@@ -133,7 +171,9 @@ const AddVoter = () => {
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="flex flex-col">
-                    <label className="text-gray-700 font-semibold">Email:</label>
+                    <label className="text-gray-700 font-semibold">
+                      Email:
+                    </label>
                     <input
                       type="email"
                       name="email"
@@ -144,7 +184,9 @@ const AddVoter = () => {
                     />
                   </div>
                   <div className="flex flex-col">
-                    <label className="text-gray-700 font-semibold">Aadhaar Number:</label>
+                    <label className="text-gray-700 font-semibold">
+                      Aadhaar Number:
+                    </label>
                     <input
                       type="text"
                       name="aadhaar"
@@ -157,7 +199,9 @@ const AddVoter = () => {
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="flex flex-col">
-                    <label className="text-gray-700 font-semibold">Gender:</label>
+                    <label className="text-gray-700 font-semibold">
+                      Gender:
+                    </label>
                     <select
                       name="gender"
                       value={voter.gender}
@@ -172,7 +216,9 @@ const AddVoter = () => {
                     </select>
                   </div>
                   <div className="flex flex-col">
-                    <label className="text-gray-700 font-semibold">State:</label>
+                    <label className="text-gray-700 font-semibold">
+                      State:
+                    </label>
                     <select
                       name="state"
                       value={voter.state}
@@ -181,13 +227,18 @@ const AddVoter = () => {
                       required
                     >
                       <option value="">Select State</option>
-                      <option value="State A">State A</option>
-                      <option value="State B">State B</option>
+                      {states.map((item, index) => (
+                        <option value={item} key={index}>
+                          {item}
+                        </option>
+                      ))}
                     </select>
                   </div>
                 </div>
                 <div className="flex flex-col">
-                  <label className="text-gray-700 font-semibold">Constituency:</label>
+                  <label className="text-gray-700 font-semibold">
+                    Constituency:
+                  </label>
                   <select
                     name="constituency"
                     value={voter.constituency}
@@ -196,9 +247,25 @@ const AddVoter = () => {
                     required
                   >
                     <option value="">Select Constituency</option>
-                    <option value="Constituency A">Constituency A</option>
-                    <option value="Constituency B">Constituency B</option>
+                    {statesAndConsituency[voter.state]?.map(
+                      (item: string, index: number) => (
+                        <option value={item} key={index}>
+                          {item}
+                        </option>
+                      )
+                    )}
                   </select>
+                </div>
+                <div className="flex flex-col">
+                  <label className="text-gray-700 font-semibold">Address:</label>
+                  <input
+                    type="text"
+                    name="address"
+                    value={voter.address}
+                    onChange={handleChange}
+                    className="border rounded-lg p-2 mt-1"
+                    required
+                  />
                 </div>
                 <div className="flex flex-col">
                   <label className="text-gray-700 font-semibold">Photo:</label>
@@ -229,7 +296,9 @@ const AddVoter = () => {
                     className="mr-2"
                     onChange={(e) => setConfirmation(e.target.checked)}
                   />
-                  <label className="text-gray-700">Confirm before submitting</label>
+                  <label className="text-gray-700">
+                    Confirm before submitting
+                  </label>
                 </div>
                 <div className="flex justify-between px-2">
                   <button
@@ -258,57 +327,59 @@ const AddVoter = () => {
               </form>
             ) : (
               <div className="space-y-4 px-4 pb-4">
-              <div className="flex flex-col">
-                <label className="text-gray-700 font-semibold">Upload CSV File:</label>
-                <input
-                  type="file"
-                  accept=".csv"
-                  className="border rounded-lg p-2 mt-1"
-                />
-              </div>
-              <div className="flex justify-between px-2">
-                <div className="flex gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setBulkUpload(false)}
-                    className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-lg"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => console.log("Bulk upload")}
-                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition duration-300 ease-in-out transform hover:scale-105"
-                  >
-                    Upload
-                  </button>
+                <div className="flex flex-col">
+                  <label className="text-gray-700 font-semibold">
+                    Upload CSV File:
+                  </label>
+                  <input
+                    type="file"
+                    accept=".csv"
+                    className="border rounded-lg p-2 mt-1"
+                  />
+                </div>
+                <div className="flex justify-between px-2">
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setBulkUpload(false)}
+                      className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-lg"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => console.log("Bulk upload")}
+                      className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition duration-300 ease-in-out transform hover:scale-105"
+                    >
+                      Upload
+                    </button>
+                  </div>
                 </div>
               </div>
+            )}
+          </>
+        ) : (
+          <div className="text-center px-4">
+            <p>Voter Added successfully!</p>
+            <div className="flex justify-between mt-4 mb-4">
+              <button
+                onClick={handleAddMoreVoters}
+                className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg"
+              >
+                Add Another Voter
+              </button>
+              <button
+                onClick={() => navigate("/voter-management")}
+                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-lg"
+              >
+                Close
+              </button>
             </div>
-          )}
-        </>
-      ) : (
-        <div className="text-center px-4">
-          <p>Voter Added successfully!</p>
-          <div className="flex justify-between mt-4 mb-4">
-            <button
-              onClick={handleAddMoreVoters}
-              className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg"
-            >
-              Add Another Voter
-            </button>
-            <button
-              onClick={() => navigate("/voter-management")}
-              className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-lg"
-            >
-              Close
-            </button>
           </div>
-        </div>
-      )}
-    </Container>
-  </div>
-);
+        )}
+      </Container>
+    </div>
+  );
 };
 
 export default AddVoter;

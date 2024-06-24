@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import client from "../api/client";
 import { useDispatch } from "react-redux";
 import { updateProfile } from "../store/auth";
+import toast from "react-hot-toast";
 
 function Login() {
   const dispatch = useDispatch();
@@ -46,7 +47,7 @@ function Login() {
       dispatch(updateProfile(response.data.profile))
       navigate("/home")
     } catch (error) {
-      alert("Invalid credentials. Please try again.");
+      toast.error("Invalid credentials. Please try again.");
     }
   };
   const handleGetOtp = async () => {
@@ -57,7 +58,7 @@ function Login() {
       isValid = loginInfo.mobile.length === 10;
     }
     if (!isValid) {
-      alert("Invalid Aadhaar number or mobile number.");
+      toast.error("Invalid Aadhaar number or mobile number.");
       return;
     }
     if(loginChoice==="aadhaar"){
@@ -86,7 +87,7 @@ function Login() {
         });
         alert(data.message);
       } catch (error) {
-        alert("Something went wrong. Please try again later.");
+        toast.error("Something went wrong. Please try again later.");
       }
 
     }

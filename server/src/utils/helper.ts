@@ -26,6 +26,7 @@ export const formatProfile = (user:UserDocument)=>{
       voterId: user.voterId,
       mobile: user.mobile,
       address: user.address,
+      gender: user.gender,
     };
 }
 
