@@ -121,18 +121,15 @@ const AddCandidate = () => {
                   required
                 >
                   <option value="">Select Party</option>
-                  <option value="TMC">All India Trinamool Congress(TMC)</option>
-                  <option value="INC">Indian National Congress (INC)</option>
-                  <option value="BJP">Bharatiya Janata Party(BJP)</option>
-                  <option value="CPIM">
+                  <option value="All India Trinamool Congress(TMC)">All India Trinamool Congress (AITMC)</option>
+                  <option value="Indian National Congress (INC)">Indian National Congress (INC)</option>
+                  <option value="Bharatiya Janata Party (BJP)">Bharatiya Janata Party (BJP)</option>
+                  <option value="Communist Party of India (Marxist)(CPIM)">
                     Communist Party of India (Marxist)(CPIM)
                   </option>
-                  <option value="AAP">Aam Aadmi Party(AAP)</option>
-                  <option value="SP">Samajwadi Party(SP)</option>
-                  <option value="RSP">
-                    Revolutionary Socialist Party(RSP)
-                  </option>
-                  <option value="RJP">Rashtriya Janata Party (RJP)</option>
+                  <option value="Aam Aadmi Party (AAP)">Aam Aadmi Party (AAP)</option>
+                  <option value="Samajwadi Party (SJP)">Samajwadi Party (SP)</option>
+                  <option value="Rashtriya Janata Party (RJP)">Rashtriya Janata Party (RJP)</option>
                 </select>
               </div>
             </div>

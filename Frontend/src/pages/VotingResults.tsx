@@ -16,26 +16,20 @@ import { useSelector } from "react-redux";
 import { getElectionsState } from "../store/election";
 import client from "../api/client";
 import { getAuthState } from "../store/auth";
-import { partyDetails } from "../utils/color";
+import PartyColors from "../components/PartyColors"; // Import PartyColors
 
 const VotingResults = () => {
   const [selectedElection, setSelectedElection] = useState(null);
   const [selectedState, setSelectedState] = useState(null);
   const [selectedConstituency, setSelectedConstituency] = useState(null);
-  const {elections} = useSelector(getElectionsState);
-  const [electionResultsData,setElectionResultData] = useState([]);
-  const {profile} = useSelector(getAuthState);
-  // console.log(elections);
-  // console.log(selectedElection);
-  // const states = Object.keys(selectedElection.areas);
-  // console.log(states);
-  // console.log(selectedState)
-  // console.log(selectedConstituency);
+  const { elections } = useSelector(getElectionsState);
+  const [electionResultsData, setElectionResultData] = useState([]);
+  const { profile } = useSelector(getAuthState);
   console.log(electionResultsData);
 
-  useEffect(()=>{
-    const func = async()=>{
-      const token = localStorage.getItem('token');
+  useEffect(() => {
+    const func = async () => {
+      const token = localStorage.getItem("token");
       const { data } = await client.patch(
         "candidates/get-based-on-constituency",
         {
@@ -48,17 +42,15 @@ const VotingResults = () => {
           },
         }
       );
-      // console.log(data);
       const voterResult = data.candidateBasedConstituency;
       voterResult.sort((a, b) => b.votes - a.votes);
-      // console.log(voterResult);
       setElectionResultData(voterResult);
-    }
-    if(selectedState&&selectedConstituency){
+    };
+    if (selectedState && selectedConstituency) {
       func();
     }
-    const func2 = async()=>{
-      const token = localStorage.getItem('token');
+    const func2 = async () => {
+      const token = localStorage.getItem("token");
       const { data } = await client.patch(
         "candidates/get-based-on-constituency",
         {
@@ -71,33 +63,12 @@ const VotingResults = () => {
           },
         }
       );
-      // console.log(data);
       const voterResult = data.candidateBasedConstituency;
-      voterResult.sort((a,b)=> b.votes - a.votes);
-      // console.log(voterResult);
+      voterResult.sort((a, b) => b.votes - a.votes);
       setElectionResultData(voterResult);
-      
-    }
-
-      func2();
-
-
-  },[selectedState,selectedConstituency])
-
-
-  const electionResults = [
-    { id: 1, name: "Lok Shaba Results" },
-    { id: 2, name: "Bidhan Sabha Results" },
-  ];
-
-  // const states = [
-  //   { id: 1, name: "Maharashtra" },
-  //   { id: 2, name: "Uttar Pradesh" },
-  //   { id: 3, name: "Bihar" },
-  //   { id: 4, name: "West Bengal" },
-  //   { id: 5, name: "Karnataka" },
-  //   { id: 6, name: "Gujarat" },
-  // ];
+    };
+    func2();
+  }, [selectedState, selectedConstituency]);
 
   const constituencies = {
     Maharashtra: [
@@ -138,50 +109,14 @@ const VotingResults = () => {
     ],
   };
 
-  // const electionResultsData = [
-  //   {
-  //     id: 1,
-  //     party: "All India Trinamool Congress (TMC)",
-  //     votes: 1000,
-  //     logo: <Aitmc />,
-  //   },
-  //   {
-  //     id: 2,
-  //     party: "Indian National Congress (INC)",
-  //     votes: 1500,
-  //     logo: <Inc />,
-  //   },
-  //   {
-  //     id: 3,
-  //     party: "Bharatiya Janata Party (BJP)",
-  //     votes: 2000,
-  //     logo: <Bjp />,
-  //   },
-  //   {
-  //     id: 4,
-  //     party: "Communist Party of India (Marxist) (CPIM)",
-  //     votes: 800,
-  //     logo: <Cpim />,
-  //   },
-  //   { id: 5, party: "Aam Aadmi Party (AAP)", votes: 1200, logo: <Aap /> },
-  //   { id: 6, party: "Samajwadi Janta Party (SP)", votes: 600, logo: <Sjp /> },
-  //   { id: 7, party: "Rastaya Janta Party (RSP)", votes: 400, logo: <Rjp /> },
-  // ];
-
   const voteData = {
-    labels: electionResultsData.map((result) => partyDetails[result.party].party),
+    labels: electionResultsData.map((result) => result.party),
     datasets: [
       {
         data: electionResultsData.map((result) => result.votes),
-        backgroundColor: [
-          "#008000", // Color for TMC
-          "#0F56B3", // Color for INC
-          "#FF9933", // Color for BJP
-          "#FF0000", // Color for CPIM
-          "#00FFFF", // Color for AAP
-          "#0000FF", // Color for SP
-          "#800080", // Color for RSP
-        ],
+        backgroundColor: electionResultsData.map(
+          (result) => PartyColors[result.party]
+        ),
         borderColor: "#FFFFFF",
         borderWidth: 2,
       },
@@ -252,7 +187,7 @@ const VotingResults = () => {
                   options={elections.map((election) => ({
                     value: election._id,
                     label: election.electionName,
-                    areas: election.areas
+                    areas: election.areas,
                   }))}
                   onChange={handleSelectElection}
                   value={selectedElection}
@@ -260,38 +195,35 @@ const VotingResults = () => {
                 />
               </div>
 
-              {selectedElection?
-              
-              <div className="w-1/3 px-2">
-                <Select
-                  className="button-style"
-                  options={Object.keys(selectedElection.areas).map((state) => ({
-                    value: state,
-                    label: state,
-                  }))}
-                  onChange={handleSelectState}
-                  value={selectedState}
-                  placeholder="Select State"
-                  // isDisabled={!selectedElection}
-                />
-              </div> : 
-            
-              <div className="w-1/3 px-2">
-                <Select
-                  className="button-style"
-                  options={[].map((state) => ({
-                    value: state,
-                    label: state,
-                  }))}
-                  onChange={handleSelectState}
-                  value={selectedState}
-                  placeholder="Select State"
-                  // isDisabled={!selectedElection}
-                />
-              </div>
-            
-            }
-              
+              {selectedElection ? (
+                <div className="w-1/3 px-2">
+                  <Select
+                    className="button-style"
+                    options={Object.keys(selectedElection.areas).map(
+                      (state) => ({
+                        value: state,
+                        label: state,
+                      })
+                    )}
+                    onChange={handleSelectState}
+                    value={selectedState}
+                    placeholder="Select State"
+                  />
+                </div>
+              ) : (
+                <div className="w-1/3 px-2">
+                  <Select
+                    className="button-style"
+                    options={[].map((state) => ({
+                      value: state,
+                      label: state,
+                    }))}
+                    onChange={handleSelectState}
+                    value={selectedState}
+                    placeholder="Select State"
+                  />
+                </div>
+              )}
 
               <div className="w-1/3 pl-2">
                 <Select
@@ -312,56 +244,56 @@ const VotingResults = () => {
                 className="w-full flex justify-center items-center"
                 style={{ height: "300px" }}
               >
-                <div className="h-full w-full p-4 bg-gray-50 shadow-md rounded-lg">
-                  <Doughnut data={voteData} options={options} />
-                </div>
+                <Doughnut data={voteData} options={options} />
               </div>
             </div>
-            <h2 className="text-lg font-semibold mb-6 text-gray-800 border-b-2 border-gray-300 pb-2">
-              Election Results
-            </h2>
-            <ul className="space-y-4">
-              {electionResultsData?.map((election, index) => (
-                <li
-                  key={election._id}
-                  className="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
-                >
-                  <div className="grid grid-cols-12 gap-4 items-center">
-                    <div className="col-span-1 flex justify-center">
-                      <span className="text-md font-medium text-gray-800">
-                        {index + 1}
-                      </span>
-                    </div>
-                    <div className="col-span-1 flex justify-center">
+            <div>
+              <h2 className="text-lg font-semibold mb-2 text-gray-800">
+                Election Results
+              </h2>
+              <ul className="space-y-4">
+                {electionResultsData?.map((election, index) => (
+                  <li
+                    key={election._id}
+                    className="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
+                  >
+                    <div className="grid grid-cols-12 gap-4 items-center">
+                      <div className="col-span-1 flex justify-center">
+                        <span className="text-md font-medium text-gray-800">
+                          {index + 1}
+                        </span>
+                      </div>
+                      <div className="col-span-1 flex justify-center">
+                        <div
+                          className="h-12 w-1"
+                          style={{
+                            backgroundColor:
+                              voteData.datasets[0].backgroundColor[index],
+                          }}
+                        ></div>
+                      </div>
                       <div
-                        className="h-12 w-1"
-                        style={{
-                          backgroundColor:
-                            voteData.datasets[0].backgroundColor[index],
-                        }}
-                      ></div>
+                        className="col-span-2 flex justify-center"
+                        style={{ width: "1.5cm", height: "1.5cm" }}
+                      >
+                        {/* {election.} */}
+                        <PartyLogo party={election.party} />
+                      </div>
+                      <div className="col-span-4 flex items-center">
+                        <p className="text-sm font-medium text-gray-800">
+                          {election.party}
+                        </p>
+                      </div>
+                      <div className="mr-10 col-span-4 flex items-center justify-end">
+                        <p className="text-sm font-medium text-gray-800 transition-all duration-300 transform hover:scale-105">
+                          {election.votes} Votes
+                        </p>
+                      </div>
                     </div>
-                    <div
-                      className="col-span-2 flex justify-center"
-                      style={{ width: "1.5cm", height: "1.5cm" }}
-                    >
-                      {/* {election.} */}
-                      <PartyLogo party={election.party}/>
-                    </div>
-                    <div className="col-span-4 flex items-center">
-                      <p className="text-sm font-medium text-gray-800">
-                        {election.party}
-                      </p>
-                    </div>
-                    <div className="mr-10 col-span-4 flex items-center justify-end">
-                      <p className="text-sm font-medium text-gray-800 transition-all duration-300 transform hover:scale-105">
-                        {election.votes} Votes
-                      </p>
-                    </div>
-                  </div>
-                </li>
-              ))}
-            </ul>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         </div>
       </Container>

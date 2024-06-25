@@ -1,5 +1,5 @@
 // import React from 'react';
-import CandidatePhotos from "../components/CandidatePhotos"; 
+// import CandidatePhotos from "../components/CandidatePhotos"; 
 import PartyColors from "../components/PartyColors";
 import { Aitmc, Inc, Bjp, Cpim, Aap, Sjp, Rjp } from "../components/PartySymbols"; 
 
@@ -23,25 +23,25 @@ const CandidateCard = ({ id, photoKey, name, party, age }) => {
   // Mapping party to the respective symbol component
   let PartySymbol;
   switch (party) {
-    case "TMC":
+    case "All India Trinamool Congress (AITMC)":
       PartySymbol = Aitmc;
       break;
-    case "INC":
+    case "Indian National Congress (INC)":
       PartySymbol = Inc;
       break;
-    case "BJP":
+    case "Bharatiya Janata Party (BJP)":
       PartySymbol = Bjp;
       break;
-    case "CPIM":
+    case "Communist Party of India (Marxist) (CPIM)":
       PartySymbol = Cpim;
       break;
-    case "AAP":
+    case "Aam Aadmi Party (AAP)":
       PartySymbol = Aap;
       break;
-    case "SJP":
+    case "Samajwadi Janta Party (SJP)":
       PartySymbol = Sjp;
       break;
-    case "RJP":
+    case "Rastaya Janta Party (RJP)":
       PartySymbol = Rjp;
       break;
     default:

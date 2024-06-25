@@ -21,11 +21,12 @@ const Rjp = () => <img src={RjpLogo} alt="RJP Logo" />;
 export { Aitmc, Inc, Bjp, Cpim, Aap, Sjp, Rjp };
 
 export const PartyLogo = ({ party }) => {
-  if (party === "INC") return <Inc/>;
-  else if (party === "BJP") return <Bjp/>;
-  else if (party === "TMC") return <Aitmc/>;
-  else if (party === "CPIM") return <Cpim/>;
-  else if (party === "AAP") return <Aap/>;
-  else if (party === "SP") return <Sjp/>;
-  else if (party === "RJP") return <Rjp/>;
+
+  if (party === "Indian National Congress (INC)") return <Inc/>;
+  else if (party === "Bharatiya Janata Party (BJP)") return <Bjp/>;
+  else if (party === "All India Trinamool Congress (AITMC)") return <Aitmc/>;
+  else if (party === "Communist Party of India (Marxist) (CPIM)") return <Cpim/>;
+  else if (party === "Aam Aadmi Party (AAP)") return <Aap/>;
+  else if (party === "Samajwadi Janta Party (SJP)") return <Sjp/>;
+  else if (party === "Rastaya Janta Party (RJP)") return <Rjp/>;
 };
