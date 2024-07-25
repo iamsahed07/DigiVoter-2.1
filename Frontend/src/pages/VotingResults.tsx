@@ -3,19 +3,13 @@ import { Container } from "../components/Container";
 import { Doughnut } from "react-chartjs-2";
 import Select from "react-select";
 import {
-  Aitmc,
-  Inc,
-  Bjp,
-  Cpim,
-  Aap,
-  Sjp,
-  Rjp,
   PartyLogo,
 } from "../components/PartySymbols";
 import { useSelector } from "react-redux";
 import { getElectionsState } from "../store/election";
 import client from "../api/client";
-import { getAuthState } from "../store/auth";
+import { ChartOptions } from "chart.js";
+
 import PartyColors from "../components/PartyColors"; // Import PartyColors
 
 const VotingResults = () => {
@@ -24,15 +18,67 @@ const VotingResults = () => {
   const [selectedConstituency, setSelectedConstituency] = useState(null);
   const { elections } = useSelector(getElectionsState);
   const [electionResultsData, setElectionResultData] = useState([]);
-  const { profile } = useSelector(getAuthState);
-  console.log(electionResultsData);
+  const [busy, setBusy] = useState(false);
+  // console.log(electionResultsData);
+  // console.log("selectedState", selectedState);
+  console.log("selectedElec", selectedElection);
+  // console.log(electionResultsData);
+
+  useEffect(() => {
+    const func3 = async () => {
+      setBusy(true);
+      const token = localStorage.getItem("token");
+      const { data } = await client.post(
+        "candidates/get-based-on-electionName",
+        {
+          electionName: selectedElection.label,
+        },
+        {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        }
+      );
+      const voterResult = data.cadidateBasedOnElectionName;
+      voterResult.sort((a, b) => b.votes - a.votes);
+      setElectionResultData(voterResult);
+      setBusy(false);
+    };
+    if (selectedElection) func3();
+  }, [selectedElection]);
+
+  useEffect(() => {
+    const func2 = async () => {
+      setBusy(true);
+      const token = localStorage.getItem("token");
+      const { data } = await client.post(
+        "candidates/get-based-on-state",
+        {
+          electionName: selectedElection.label,
+          state: selectedState.label,
+        },
+        {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        }
+      );
+      const voterResult = data.candidateBasedStates;
+      voterResult.sort((a, b) => b.votes - a.votes);
+      setElectionResultData(voterResult);
+      setBusy(false);
+    };
+    if (selectedElection && selectedState) func2();
+  }, [selectedState]);
 
   useEffect(() => {
     const func = async () => {
+      setBusy(true);
       const token = localStorage.getItem("token");
-      const { data } = await client.patch(
+      const { data } = await client.post(
         "candidates/get-based-on-constituency",
         {
+          electionName: selectedElection.label,
           state: selectedState.label,
           constituency: selectedConstituency.label,
         },
@@ -45,30 +91,17 @@ const VotingResults = () => {
       const voterResult = data.candidateBasedConstituency;
       voterResult.sort((a, b) => b.votes - a.votes);
       setElectionResultData(voterResult);
+      setBusy(false);
     };
-    if (selectedState && selectedConstituency) {
+    if (selectedState && selectedConstituency && selectedElection) {
       func();
     }
-    const func2 = async () => {
-      const token = localStorage.getItem("token");
-      const { data } = await client.patch(
-        "candidates/get-based-on-constituency",
-        {
-          state: profile.state,
-          constituency: profile.constituency,
-        },
-        {
-          headers: {
-            Authorization: "Bearer " + token,
-          },
-        }
-      );
-      const voterResult = data.candidateBasedConstituency;
-      voterResult.sort((a, b) => b.votes - a.votes);
-      setElectionResultData(voterResult);
-    };
-    func2();
-  }, [selectedState, selectedConstituency]);
+  }, [selectedConstituency]);
+
+  useEffect(() => {
+    if (!selectedState) {
+    }
+  }, [selectedState]);
 
   const constituencies = {
     Maharashtra: [
@@ -123,7 +156,7 @@ const VotingResults = () => {
     ],
   };
 
-  const options = {
+  const options: ChartOptions<'doughnut'> = {
     rotation: -90,
     circumference: 180,
     plugins: {
@@ -188,6 +221,8 @@ const VotingResults = () => {
                     value: election._id,
                     label: election.electionName,
                     areas: election.areas,
+                    startDate: election.startDate,
+                    endDate: election.endDate
                   }))}
                   onChange={handleSelectElection}
                   value={selectedElection}
@@ -236,64 +271,90 @@ const VotingResults = () => {
                 />
               </div>
             </div>
-            <div className="mb-6">
-              <h2 className="text-lg font-semibold mb-2 text-gray-800">
-                Vote Distribution
-              </h2>
-              <div
-                className="w-full flex justify-center items-center"
-                style={{ height: "300px" }}
-              >
-                <Doughnut data={voteData} options={options} />
+
+            {busy ? (
+              <div>Loading...</div>
+            ) : (
+              <div>
+                {" "}
+                {selectedElection ? (
+                  <div>
+                    {electionResultsData.length ? (
+                      <div>
+                        <div className="mb-6">
+                          <h2 className="text-lg font-semibold mb-2 text-gray-800">
+                            Vote Distribution
+                          </h2>
+                          <div
+                            className="w-full flex justify-center items-center"
+                            style={{ height: "300px" }}
+                          >
+                            <Doughnut data={voteData} options={options} />
+                          </div>
+                        </div>
+                        <div>
+                          <h2 className="text-lg font-semibold mb-2 text-gray-800">
+                            Election Results
+                          </h2>
+                          <ul className="space-y-4">
+                            {electionResultsData?.map((election, index) => (
+                              <li
+                                key={election._id}
+                                className="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
+                              >
+                                <div className="grid grid-cols-12 gap-4 items-center">
+                                  <div className="col-span-1 flex justify-center">
+                                    <span className="text-md font-medium text-gray-800">
+                                      {index + 1}
+                                    </span>
+                                  </div>
+                                  <div className="col-span-1 flex justify-center">
+                                    <div
+                                      className="h-12 w-1"
+                                      style={{
+                                        backgroundColor:
+                                          voteData.datasets[0].backgroundColor[
+                                            index
+                                          ],
+                                      }}
+                                    ></div>
+                                  </div>
+                                  <div
+                                    className="col-span-2 flex justify-center"
+                                    style={{ width: "1.5cm", height: "1.5cm" }}
+                                  >
+                                    {/* {election.} */}
+                                    <PartyLogo party={election.party} />
+                                  </div>
+                                  <div className="col-span-4 flex items-center">
+                                    <p className="text-sm font-medium text-gray-800">
+                                      {election.party}
+                                    </p>
+                                  </div>
+                                  <div className="mr-10 col-span-4 flex items-center justify-end">
+                                    <p className="text-sm font-medium text-gray-800 transition-all duration-300 transform hover:scale-105">
+                                      {election.votes} Votes
+                                    </p>
+                                  </div>
+                                </div>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                    ) : (
+                      <p className="text-2xl font-semibold text-red-500">
+                        Oops..No candidates!!!
+                      </p>
+                    )}
+                  </div>
+                ) : (
+                  <p className="text-2xl font-semibold text-red-500">
+                    please select an election first!!!!!
+                  </p>
+                )}
               </div>
-            </div>
-            <div>
-              <h2 className="text-lg font-semibold mb-2 text-gray-800">
-                Election Results
-              </h2>
-              <ul className="space-y-4">
-                {electionResultsData?.map((election, index) => (
-                  <li
-                    key={election._id}
-                    className="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
-                  >
-                    <div className="grid grid-cols-12 gap-4 items-center">
-                      <div className="col-span-1 flex justify-center">
-                        <span className="text-md font-medium text-gray-800">
-                          {index + 1}
-                        </span>
-                      </div>
-                      <div className="col-span-1 flex justify-center">
-                        <div
-                          className="h-12 w-1"
-                          style={{
-                            backgroundColor:
-                              voteData.datasets[0].backgroundColor[index],
-                          }}
-                        ></div>
-                      </div>
-                      <div
-                        className="col-span-2 flex justify-center"
-                        style={{ width: "1.5cm", height: "1.5cm" }}
-                      >
-                        {/* {election.} */}
-                        <PartyLogo party={election.party} />
-                      </div>
-                      <div className="col-span-4 flex items-center">
-                        <p className="text-sm font-medium text-gray-800">
-                          {election.party}
-                        </p>
-                      </div>
-                      <div className="mr-10 col-span-4 flex items-center justify-end">
-                        <p className="text-sm font-medium text-gray-800 transition-all duration-300 transform hover:scale-105">
-                          {election.votes} Votes
-                        </p>
-                      </div>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </div>
+            )}
           </div>
         </div>
       </Container>

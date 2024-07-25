@@ -6,15 +6,34 @@ import { MdPoll } from "react-icons/md";
 import { IoLogOutOutline } from "react-icons/io5";
 import { MdDashboardCustomize } from "react-icons/md";
 import { RiInformationFill } from "react-icons/ri";
+import client from "../api/client";
+import toast from "react-hot-toast";
 
 export const DrawerVoter = () => {
   const navigate = useNavigate();
-
-  const logoutHandler = () => {
-    const result = window.confirm("Are you sure you want to log out?");
+  const logoutHandler = async () => {
+    const token = localStorage.getItem("token");
+    // console.log(token);
+    if (!token) {
+      toast.error("Log in required!!!");
+      return;
+    }
+    const result = confirm("Are you sure you want to log out?");
     if (result) {
+      try {
+        const { data } = await client.get("auth/log-out", {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        });
+        if (data.success) {
+          toast.success("Logout successfully");
+        }
+      } catch (error) {
+        toast.error(error.message);
+      }
       navigate("/");
-      localStorage.clear();
+      localStorage.removeItem("adminToken");
     }
   };
 

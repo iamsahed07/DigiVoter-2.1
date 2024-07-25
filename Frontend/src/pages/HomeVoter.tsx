@@ -3,6 +3,9 @@ import { Link } from "react-router-dom";
 import { HiUserCircle } from "react-icons/hi";
 import { FaSearch, FaEdit, FaMapMarkerAlt, FaDownload } from "react-icons/fa";
 import { Container } from "../components/Container"; // Import the Container component
+import { useSelector } from "react-redux";
+import { getAuthState, updateProfile } from "../store/auth";
+import client from "../api/client";
 
 const HomeVoter = () => {
   const recentActivities = [
@@ -14,15 +17,28 @@ const HomeVoter = () => {
   ];
 
   const [profileData, setProfileData] = useState(null);
+  const {profile} = useSelector(getAuthState);
 
   useEffect(() => {
     setTimeout(() => {
       const profileDataFromAPI = {
-        name: "John Doe",
+        name: profile?.name,
       };
       setProfileData(profileDataFromAPI);
     }, 1000);
   }, []);
+   useEffect(() => {
+     const getUserInfo = async () => {
+       const token = localStorage.getItem("token");
+       const { data } = await client.get("/auth/getUser", {
+         headers: {
+           Authorization: "Bearer " + token,
+         },
+       });
+       dispatch(updateProfile(data.profile));
+     };
+     getUserInfo();
+   }, []);
 
   const openLinkInNewTab = (url) => {
     window.open(url, "_blank");
@@ -131,3 +147,7 @@ const HomeVoter = () => {
 };
 
 export default HomeVoter;
+function dispatch(arg0: any) {
+  throw new Error("Function not implemented.");
+}
+

@@ -95,15 +95,47 @@ export const addCandidate = async (
 
 export async function getAllCandidateBasedOnConstituency(req: any, res: any) {
   try {
-    const { state, constituency } = req.body;
+    const { electionName,state, constituency } = req.body;
     const candidateBasedConstituency = await Candidate.find({
       state,
       constituency,
+      electionName
     });
     res.status(200).json({
       message: "Candidate cadidateBasedConstituency successfully fetched",
       success: true,
       candidateBasedConstituency,
+    });
+  } catch (err: any) {
+    res.status(400).json({ message: err.message, success: false });
+  }
+}
+export async function getAllCandidateBasedOnState(req: any, res: any) {
+  try {
+    const { electionName, state } = req.body;
+    const candidateBasedStates = await Candidate.find({
+      state,
+      electionName,
+    });
+    res.status(200).json({
+      message: "Candidate cadidateBasedOn States successfully fetched",
+      success: true,
+      candidateBasedStates,
+    });
+  } catch (err: any) {
+    res.status(400).json({ message: err.message, success: false });
+  }
+}
+export async function getAllCandidateBasedOnElectionName(req: any, res: any) {
+  try {
+    const {electionName} = req.body;
+    const cadidateBasedOnElectionName = await Candidate.find({
+      electionName,
+    });
+    res.status(200).json({
+      message: "Candidate cadidateBasedOnElectionName successfully fetched",
+      success: true,
+      cadidateBasedOnElectionName,
     });
   } catch (err: any) {
     res.status(400).json({ message: err.message, success: false });

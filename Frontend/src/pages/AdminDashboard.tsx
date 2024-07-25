@@ -11,6 +11,12 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import { getAuthState, updateProfiles } from "../store/auth";
+import { useDispatch, useSelector } from "react-redux";
+import { getCandidateState } from "../store/candidate";
+import { getElectionsState } from "../store/election";
+import { findStatusOfElection } from "../utils/helper";
+import client from "../api/client";
 
 // Register Chart.js components
 ChartJS.register(
@@ -24,10 +30,18 @@ ChartJS.register(
 );
 
 const AdminDashboard = () => {
+  const {profiles} = useSelector(getAuthState)
+  const candidateProfiles = useSelector(getCandidateState)
+  const {elections} = useSelector(getElectionsState)
+  const dispatch = useDispatch();
+   const liveElections = elections?.filter(
+     (election) =>
+       findStatusOfElection(election.startDate, election.endDate) === "Live"
+   );
   const stats = {
-    totalVoters: 25000,
-    totalVotes: 180000,
-    activeElections: 20,
+    totalVoters: profiles?.length,
+    totalVotes: candidateProfiles.profiles?.length,
+    activeElections: liveElections?.length,
     voterParticipation: [60, 62, 65, 68, 70],
     availableVoters: Array(5).fill(100),
   };
@@ -56,6 +70,12 @@ const AdminDashboard = () => {
         lineInstance.destroy();
       }
     }
+    const func1 = async () => {
+      const { data } = await client.get("auth/getAllUser");
+      // console.log(data);
+      dispatch(updateProfiles(data.users));
+    };
+    func1();
   }, []);
 
   const pieData = {
@@ -196,3 +216,5 @@ const AdminDashboard = () => {
 };
 
 export default AdminDashboard;
+
+

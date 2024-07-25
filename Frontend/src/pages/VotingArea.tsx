@@ -3,29 +3,18 @@ import { Container } from "../components/Container";
 import CandidateCard from "../components/CandidateCard";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { getElectionsState, updateStatesAndConsituency } from "../store/election";
+import { getElectionsState, updateElections, updateStatesAndConsituency } from "../store/election";
 import { calculateAge, findStatusOfElection } from "../utils/helper";
-import { getCandidateState, updateCandidateProfile } from "../store/candidate";
+import { CandidateProfile, getCandidateState, updateCandidateProfile } from "../store/candidate";
 import client from "../api/client";
 
 const VotingArea = () => {
-  interface selectedECandidatetypes {
-    adhar: string;
-    candidateName: string;
-    constituency: string;
-    createdAt: string;
-    dob: string;
-    electionName: string;
-    imgUrl: string;
-    party: string;
-    state: string;
-    updatedAt: string;
-  }
 
-  const [selectedElectionCadidates, setSelectedElectionCadidates] = useState<selectedECandidatetypes[]>();
+  const [selectedElectionCadidates, setSelectedElectionCadidates] = useState<CandidateProfile[]>();
   const [selectedElectionName, setSelectedElectionName] = useState<string>(""); // New state for selected election name
   const navigate = useNavigate();
   const { elections } = useSelector(getElectionsState);
+  // console.log(elections);
   const { profiles } = useSelector(getCandidateState);
   const dispatch = useDispatch();
 
@@ -65,6 +54,12 @@ const VotingArea = () => {
       dispatch(updateCandidateProfile(data.candidates));
     };
     func();
+    const func2 = async () => {
+      const { data } = await client.get("elections/get-all");
+      // console.log(data);
+      dispatch(updateElections(data.elections));
+    };
+    func2();
   }, [dispatch]);
 
   return (

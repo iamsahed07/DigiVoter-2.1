@@ -6,14 +6,34 @@ import { MdSpaceDashboard } from "react-icons/md";
 import { FaBookBookmark } from "react-icons/fa6";
 import { MdAdminPanelSettings } from "react-icons/md";
 import { FaUsers } from "react-icons/fa";
+import client from "../api/client";
+import toast from "react-hot-toast";
 
 export const DrawerAdmin = () => {
   const navigate = useNavigate();
-  const logoutHandler = () => {
+  const logoutHandler = async () => {
+    const token = localStorage.getItem('adminToken')
+    // console.log(token);
+    if(!token){
+      toast.error("Log in required!!!")
+      return;
+    }
     const result = confirm("Are you sure you want to log out?");
     if (result) {
+      try{
+        const { data } = await client.get("auth/admin-log-out", {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        });
+        if(data.success){
+          toast.success('Logout successfully')
+        }
+      }catch(error){
+        toast.error(error.message)
+      }
       navigate("/");
-      localStorage.clear();
+      localStorage.removeItem("adminToken");
     }
   };
   return (
@@ -85,7 +105,7 @@ export const DrawerAdmin = () => {
           <h3 className="ml-2">Results / Analytics</h3>
         </NavLink>
         <div
-          className="flex py-2 px-3 my-2 w-[100%] hover:bg-[#3498db] hover:text-white hover:rounded-md"
+          className="flex py-2 px-3 my-2 w-[100%] hover:bg-[#3498db] hover:text-white hover:rounded-md hover:cursor-pointer"
           onClick={logoutHandler}
         >
           <IconContext.Provider value={{ size: "1.5em" }}>
@@ -97,4 +117,3 @@ export const DrawerAdmin = () => {
     </div>
   );
 };
-

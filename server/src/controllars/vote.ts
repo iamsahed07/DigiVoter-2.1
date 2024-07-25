@@ -14,10 +14,9 @@ export const giveVote = async (req: GiveVote, res: Response) => {
       owner: id,
     });
     if (!verificationToken)
-      return res.status(403).json({ error: "Invalid token!", success: false });
-    const matched = verificationToken.compareToken(token);
-    if (!matched)
-      return res.status(403).json({ error: "Invalid token!", success: false });
+      return res.status(403).json({ error: "Invalid Varification token!", success: false });
+    const matched = await verificationToken.compareToken(token);
+    if (!matched) return res.status(403).json({ error: "Invalid token!", success: false });
     await EmailVerificationToken.findByIdAndDelete(verificationToken._id);
 
     const isVoted = await GivenVote.findOne({ voterRef: id });
@@ -50,8 +49,9 @@ export const giveVote = async (req: GiveVote, res: Response) => {
 };
 export const isVoted: RequestHandler = async (req , res) => {
   try {
-    const { id } = req.user;
-    const isVoted = await GivenVote.findOne({ voterRef: id });
+    const { id} = req.user;
+    const {electionId } = req.body;
+    const isVoted = await GivenVote.findOne({ voterRef: id, electionRef:electionId });
     if (isVoted) {
       return res
         .status(200)

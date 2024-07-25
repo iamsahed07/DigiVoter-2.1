@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { Container } from "../components/Container";
 import { useEffect, useState } from "react";
 import client from "../api/client";
-import { getAuthState, updateProfile } from "../store/auth";
+import { getAuthState, updateProfile, updateVoterIdVerified } from "../store/auth";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
 
@@ -15,6 +15,7 @@ export const VoterRegistration = () => {
 
   const handleResister = ()=>{
     if(userInfo.profile?.voterId === epicNo){
+      dispatch(updateVoterIdVerified(true));
       toast.success("registration successfull");
       navigate("/profile");
     }else{
@@ -32,6 +33,9 @@ export const VoterRegistration = () => {
       dispatch(updateProfile(data.profile));
     };
     getUserInfo();
+    if(userInfo.isVoterIdVerified){
+      navigate("/profile");
+    }
   },[]);
   return (
     <div className="flex flex-col w-3/4 float-right mr-10 mt-10">

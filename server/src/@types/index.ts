@@ -74,6 +74,12 @@ declare global {
         imgUrl: string;
         voterId: string;
       };
+      admin: {
+        id: any;
+        username:string;
+        email: string;
+        role: string;
+      };
       token: string;
     }
   }

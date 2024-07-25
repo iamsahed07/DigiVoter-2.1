@@ -123,12 +123,14 @@ export const adminSignIn = async (req: CreateAdmin, res: Response) => {
     return res
       .status(400)
       .json({ error: "Username or password invalid!!!", success: false });
-   const JwtToken =  jwt.sign({ AdminId: admin._id, role: 'Admin'},
-    JWT_SECRET
-    //   {
-    //   expiresIn: '1d'
-    // }
+   const JwtToken =  jwt.sign({ adminId: admin._id, role: 'Admin'},
+    JWT_SECRET,
+      {
+      expiresIn: '1d'
+    }
   );
+  admin.tokens.push(JwtToken);
+  await admin.save();
   res.json({
     message: "Admin signIn successfully", success: true,
     token: JwtToken
@@ -205,10 +207,10 @@ export const signIn: RequestHandler = async (
   if (!matched) return res.status(403).json({ error: "Invalid token!" });
   const jwttoken = jwt.sign(
     { userId: user._id, role: user.role },
-    JWT_SECRET
-    //   {
-    //   expiresIn: '1d'
-    // }
+    JWT_SECRET,
+      {
+      expiresIn: '1d'
+    }
   );
   user.tokens.push(jwttoken);
   user.verified = true;
@@ -254,4 +256,18 @@ export const logOut: RequestHandler = async (req, res) => {
   else user.tokens = user.tokens.filter((t) => t !== token);
   await user.save();
   res.json({ success: true });
+};
+export const adminLogOut: RequestHandler = async (req, res) => {
+  const { fromAll } = req.query;
+  const token = req.token;
+  const admin = await Admin.findById(req.admin.id);
+  // console.log(admin);
+  if (!admin) throw new Error("something went wrong, admin not found!");
+
+  //logout from all
+  // '/auth/logout?fromAll=true'
+  if (fromAll === "yes") admin.tokens = [];
+  else admin.tokens = admin.tokens.filter((t) => t !== token);
+  await admin.save();
+  res.status(200).json({ success: true });
 };

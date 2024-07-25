@@ -105,28 +105,28 @@ const constituencies = {
 };
 
 
-const CandidateDetails: React.FC = () => {
-  return (
-    <div>
-      <h2>Candidate Details</h2>
-      <ul>
-        {candidates.map((candidate, index) => (
-          <li key={index}>
-            <strong>Name:</strong> {candidate.name}<br />
-            <strong>Party:</strong> {candidate.party}<br />
-            <strong>Age:</strong> {candidate.age}<br />
-            <strong>DOB:</strong> {candidate.dob}<br />
-            <strong>Aadhaar:</strong> {candidate.aadhaar}<br />
-            <strong>State:</strong> {candidate.state}<br />
-            <strong>Constituency:</strong> {candidate.constituency}<br />
-            <strong>Vote Count:</strong> {candidate.vote_count}
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
+// const CandidateDetails: React.FC = () => {
+//   return (
+//     <div>
+//       <h2>Candidate Details</h2>
+//       <ul>
+//         {candidates.map((candidate, index) => (
+//           <li key={index}>
+//             <strong>Name:</strong> {candidate.name}<br />
+//             <strong>Party:</strong> {candidate.party}<br />
+//             <strong>Age:</strong> {candidate.age}<br />
+//             <strong>DOB:</strong> {candidate.dob}<br />
+//             <strong>Aadhaar:</strong> {candidate.aadhaar}<br />
+//             <strong>State:</strong> {candidate.state}<br />
+//             <strong>Constituency:</strong> {candidate.constituency}<br />
+//             <strong>Vote Count:</strong> {candidate.vote_count}
+//           </li>
+//         ))}
+//       </ul>
+//     </div>
+//   );
+// }
 
-export default CandidateDetails;
+// export default CandidateDetails;
 
 

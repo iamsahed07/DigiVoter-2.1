@@ -30,6 +30,7 @@ interface AuthState {
   adminProfile: AdminProfile|null;
   loggedIn: boolean;
   busy:boolean;
+  isVoterIdVerified:boolean;
 };
 
 const initialState: AuthState = {
@@ -37,7 +38,8 @@ const initialState: AuthState = {
   profiles:null,
   adminProfile:null,
   loggedIn: false,
-  busy:false
+  busy:false,
+  isVoterIdVerified:false
 };
 
 const slice = createSlice({
@@ -47,6 +49,7 @@ const slice = createSlice({
     updateProfile(authState, {payload}: PayloadAction<UserProfile | null>) {
       authState.profile = payload;
     },
+    
     updateProfiles(authState, {payload}: PayloadAction<[UserProfile] | null>) {
       authState.profiles = payload;
     },
@@ -59,6 +62,9 @@ const slice = createSlice({
     updateBusyState(authState, {payload}:PayloadAction<boolean>) {
         authState.busy = payload
     },
+    updateVoterIdVerified(authState,{payload}: PayloadAction<boolean>){
+      authState.isVoterIdVerified = payload;
+    }
   },
 });
 
@@ -68,6 +74,7 @@ export const {
   updateAdminProfile,
   updateBusyState,
   updateProfiles,
+  updateVoterIdVerified
 } = slice.actions;
 
 export const getAuthState = createSelector(

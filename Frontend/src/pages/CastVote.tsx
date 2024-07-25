@@ -21,15 +21,23 @@ export default function CastVote() {
   const [isVoted, setIsVoted] = useState(false);
   const location = useLocation();
   const candidates = location.state || {};
+  // console.log(candidates);
 
   useEffect(() => {
     const func = async () => {
       const token = localStorage.getItem("token");
-      const { data } = await client.get("vote/isVoted", {
-        headers: {
-          Authorization: "Bearer " + token,
+      const { data } = await client.post(
+        "vote/isVoted",
+        {
+          electionId: candidates.electionId,
+          
         },
-      });
+        {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        }
+      );
       setIsVoted(data.isVoted);
     };
     func();
@@ -78,8 +86,13 @@ export default function CastVote() {
   const handleOtpSubmit = async (votedCandidateId: any) => {
     setIsVerifying(true);
     const token = localStorage.getItem("token");
+    console.log({
+      candidateId: votedCandidateId,
+      electionId: candidates.electionId,
+      token: otp,
+    });
     try {
-      const response = await client.post(
+      const {data} = await client.post(
         "vote/give-vote",
         {
           candidateId: votedCandidateId,
@@ -93,14 +106,15 @@ export default function CastVote() {
         }
       );
 
-      if (response.data.success) {
+      console.log(data);
+      if (data.success) {
         toast.success("Vote counted successfully!");
+        setShowOtpPopup(false);
+        setIsVerifying(false);
+        setOtp("");
       } else {
         toast.error("Invalid OTP. Please try again.");
       }
-      setShowOtpPopup(false);
-      setIsVerifying(false);
-      setOtp("");
     } catch (error) {
       toast.error("Failed to verify OTP. Please try again.");
       setIsVerifying(false);
@@ -135,7 +149,7 @@ export default function CastVote() {
       {isVoted ? (
         <div className="flex items-center justify-center bg-gray-100 p-8 rounded-lg shadow-lg">
         <h2 className="text-2xl font-semibold text-red-500">
-        Your Vote Has Already Been Recorded!
+        Your vote recorded successfully !! Thank you!!!
         </h2>
       </div>
       ) : (
@@ -155,12 +169,12 @@ export default function CastVote() {
                 <div
                   className="w-2 h-12 mr-6"
                   style={{
-                    backgroundColor: partyDetails[candidate.party]?.color,
+                    backgroundColor: partyDetails[`${candidate.party}`]?.color,
                   }}
                 ></div>
                 <img
                   src={candidate.imgUrl}
-                  alt={candidate.candidateName}
+                  alt={`${candidate.candidateName}`}
                   className="w-16 h-16 rounded-full mr-4"
                 />
                 <div className="flex-grow">

@@ -24,7 +24,7 @@ const emailVerificationTokenSchema =
         },
         createdAt:{
             type:Date,
-            expires: 3600, //60min * 60 sec = 3600s
+            expires: 600, //10min * 60 sec = 600s //valid for 10min
             default: Date.now
 
         }
